@@ -1,0 +1,3 @@
+rootProject.name = 'manitalk'
+include 'web'
+include 'websocket'
