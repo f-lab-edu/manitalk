@@ -6,10 +6,11 @@ import com.example.web.enums.RoomType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@SpringBootTest
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class GroupRoomDetailRepositoryTest {
 
     @Autowired
@@ -18,7 +19,6 @@ public class GroupRoomDetailRepositoryTest {
     @Autowired
     private GroupRoomDetailRepository groupRoomDetailRepository;
 
-    @Transactional
     @Test
     public void create_group_room_detail() {
         Room newRoom = roomRepository.save(new Room());
@@ -28,7 +28,7 @@ public class GroupRoomDetailRepositoryTest {
         String enterCode = "T1234";
 
         GroupRoomDetail groupRoomDetail = new GroupRoomDetail(newRoom);
-        groupRoomDetail.setRoomOwner(roomOwnerId);
+        groupRoomDetail.setRoomOwnerId(roomOwnerId);
         groupRoomDetail.setRoomName(roomName);
         groupRoomDetail.setEnterCode(enterCode);
         GroupRoomDetail newGroupRoomDetail = groupRoomDetailRepository.save(groupRoomDetail);
