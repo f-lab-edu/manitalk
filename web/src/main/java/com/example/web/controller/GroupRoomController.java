@@ -1,8 +1,7 @@
 package com.example.web.controller;
 
 import com.example.web.dto.CreateGroupRoomDto;
-import com.example.web.domain.Room;
-import com.example.web.service.GroupChatService;
+import com.example.web.service.GroupRoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,16 +10,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.example.web.dto.GroupRoomDto;
 
 @RestController
-@RequestMapping("/group")
+@RequestMapping("/group/room")
 @RequiredArgsConstructor
-public class GroupChatController {
+public class GroupRoomController {
 
-    private final GroupChatService groupChatService;
+    private final GroupRoomService groupRoomService;
 
-    @PostMapping("/room")
-    public ResponseEntity<Room> createGroupRoom(@Valid @RequestBody CreateGroupRoomDto dto) {
-        return new ResponseEntity<>(groupChatService.createGroupRoom(dto), HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<GroupRoomDto> createGroupRoom(@Valid @RequestBody CreateGroupRoomDto dto) {
+        return new ResponseEntity<>(groupRoomService.createGroupRoom(dto), HttpStatus.OK);
     }
 }

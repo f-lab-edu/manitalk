@@ -36,7 +36,7 @@ public class GroupRoomDetail {
 
     @Setter
     @Column(nullable = false)
-    private Integer roomOwner;
+    private Integer roomOwnerId;
 
     @Setter
     @Column(nullable = false)
