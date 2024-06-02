@@ -1,5 +1,13 @@
 package com.example.web.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum RoomType {
-    G, M
+    G("Group"),
+    M("Manito");
+
+    private final String description;
 }
