@@ -9,11 +9,12 @@ import com.example.web.exception.room.CanNotEnterRoomException;
 import com.example.web.exception.room.DuplicatedUserRoomException;
 import com.example.web.exception.room.RoomNotFoundException;
 import com.example.web.exception.user.UserNotFoundException;
+import com.example.web.vo.RoomVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vo.GroupRoomDetailVo;
-import vo.UserRoomVo;
+import com.example.web.vo.GroupRoomDetailVo;
+import com.example.web.vo.UserRoomVo;
 
 import java.util.Optional;
 
@@ -28,7 +29,9 @@ public class GroupRoomService {
 
     @Transactional
     public GroupRoomDto createGroupRoom(CreateGroupRoomDto dto) {
-        Room room = roomService.saveRoom(new Room());
+
+        RoomVo roomVo = new RoomVo(RoomType.G);
+        Room room = roomService.saveRoom(roomVo);
 
         GroupRoomDetailVo groupRoomDetailVo = new GroupRoomDetailVo(
                 room,

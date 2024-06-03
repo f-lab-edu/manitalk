@@ -5,7 +5,7 @@ import com.example.web.dto.GroupRoomDetailDto;
 import com.example.web.repository.GroupRoomDetailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vo.GroupRoomDetailVo;
+import com.example.web.vo.GroupRoomDetailVo;
 
 @Service
 @RequiredArgsConstructor

@@ -4,7 +4,7 @@ import com.example.web.domain.UserRoom;
 import com.example.web.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vo.UserRoomVo;
+import com.example.web.vo.UserRoomVo;
 
 import java.util.Optional;
 

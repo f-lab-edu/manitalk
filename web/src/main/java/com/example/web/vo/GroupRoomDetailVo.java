@@ -1,4 +1,4 @@
-package vo;
+package com.example.web.vo;
 
 import com.example.web.domain.Room;
 import lombok.AllArgsConstructor;
