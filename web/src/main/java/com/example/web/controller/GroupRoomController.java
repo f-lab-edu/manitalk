@@ -1,6 +1,8 @@
 package com.example.web.controller;
 
 import com.example.web.dto.CreateGroupRoomDto;
+import com.example.web.dto.EnterGroupRoomDto;
+import com.example.web.dto.UserRoomDto;
 import com.example.web.service.GroupRoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +24,10 @@ public class GroupRoomController {
     @PostMapping
     public ResponseEntity<GroupRoomDto> createGroupRoom(@Valid @RequestBody CreateGroupRoomDto dto) {
         return new ResponseEntity<>(groupRoomService.createGroupRoom(dto), HttpStatus.OK);
+    }
+
+    @PostMapping("/enter")
+    public ResponseEntity<UserRoomDto> enterGroupRoom(@Valid @RequestBody EnterGroupRoomDto dto) {
+        return new ResponseEntity<>(groupRoomService.enterGroupRoom(dto), HttpStatus.OK);
     }
 }
