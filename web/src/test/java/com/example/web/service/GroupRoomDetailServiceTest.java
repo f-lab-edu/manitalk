@@ -3,15 +3,16 @@ package com.example.web.service;
 import com.example.web.domain.GroupRoomDetail;
 import com.example.web.domain.Room;
 import com.example.web.dto.GroupRoomDetailDto;
-import com.example.web.dto.GroupRoomDto;
 import com.example.web.repository.GroupRoomDetailRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import vo.GroupRoomDetailVo;
+import com.example.web.vo.GroupRoomDetailVo;
 
 import java.lang.reflect.Field;
 
@@ -27,17 +28,25 @@ class GroupRoomDetailServiceTest {
     @InjectMocks
     private GroupRoomDetailService groupRoomDetailService;
 
+    Integer roomOwnerId = 1;
+
+    String roomName = "test_room";
+
+    String enterCode = "test_code";
+
+    Room room;
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        room = new Room();
+        setId(room, 1);
+    }
+
     @Test
+    @DisplayName("새로운 그룹 채팅방을 생성합니다.")
     void create_group_room_detail() throws Exception {
 
         //given
-        Integer roomOwnerId = 1;
-        String roomName = "테스트룸";
-        String enterCode = "T1234";
-
-        Room room = new Room();
-        setId(room, 1);
-
         GroupRoomDetailVo groupRoomDetailVo = new GroupRoomDetailVo(room, roomOwnerId, roomName, enterCode);
 
         GroupRoomDetail groupRoomDetail = new GroupRoomDetail(room);
