@@ -20,7 +20,6 @@ public class GroupRoomDetailService {
         groupRoomDetail.setEnterCode(vo.getEnterCode());
 
         GroupRoomDetail newGroupRoomDetail = groupRoomDetailRepository.save(groupRoomDetail);
-        vo.getRoom().setGroupRoomDetail(newGroupRoomDetail);
 
         return new GroupRoomDetailDto(
                 vo.getRoom().getId(),
