@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,17 +43,10 @@ class GroupRoomControllerTest {
         String enterCode = "T1234";
         CreateGroupRoomDto dto = new CreateGroupRoomDto(roomOwnerId, roomName, enterCode);
 
-        Integer roomId = 1;
-        GroupRoomDetailDto groupRoomDetailDto = new GroupRoomDetailDto(
-                roomId,
+        GroupRoomDto groupRoomDto = getGroupRoomDto(
                 roomName,
                 roomOwnerId,
                 enterCode
-        );
-        GroupRoomDto groupRoomDto = new GroupRoomDto(
-                roomId,
-                RoomType.G,
-                groupRoomDetailDto
         );
         when(groupRoomService.createGroupRoom(any(CreateGroupRoomDto.class))).thenReturn(groupRoomDto);
 
@@ -62,6 +56,46 @@ class GroupRoomControllerTest {
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(groupRoomDto))
+        );
+    }
+
+    @Test
+    void create_group_room_유효성검사_실패() throws Exception {
+
+        // given
+        Integer roomOwnerId = 1;
+        String roomName = "";
+        String enterCode = "";
+        CreateGroupRoomDto dto = new CreateGroupRoomDto(roomOwnerId, roomName, enterCode);
+
+        GroupRoomDto groupRoomDto = getGroupRoomDto(
+                roomName,
+                roomOwnerId,
+                enterCode
+        );
+        when(groupRoomService.createGroupRoom(any(CreateGroupRoomDto.class))).thenReturn(groupRoomDto);
+
+        // when & then
+        mockMvc.perform(post("/group/room")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                ;
+    }
+
+    GroupRoomDto getGroupRoomDto(String roomName, Integer roomOwnerId, String enterCode) {
+        Integer roomId = 1;
+        GroupRoomDetailDto groupRoomDetailDto = new GroupRoomDetailDto(
+                roomId,
+                roomName,
+                roomOwnerId,
+                enterCode
+        );
+        return new GroupRoomDto(
+                roomId,
+                RoomType.G,
+                groupRoomDetailDto
         );
     }
 }
