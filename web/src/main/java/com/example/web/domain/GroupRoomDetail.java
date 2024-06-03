@@ -21,7 +21,8 @@ import java.time.LocalDateTime;
 public class GroupRoomDetail {
 
     @Id
-    private Integer roomId;
+    @Column(name = "room_id")
+    private Integer id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
