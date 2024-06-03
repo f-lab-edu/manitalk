@@ -1,10 +1,10 @@
 package com.example.web.dto;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@Builder
 public class GroupRoomDetailDto {
     private Integer roomId;
     private String roomName;

@@ -1,11 +1,11 @@
 package com.example.web.dto;
 
 import com.example.web.enums.RoomType;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@Builder
 public class GroupRoomDto {
     private Integer id;
     private RoomType type;

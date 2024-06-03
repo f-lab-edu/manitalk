@@ -86,16 +86,17 @@ class GroupRoomControllerTest {
 
     GroupRoomDto getGroupRoomDto(String roomName, Integer roomOwnerId, String enterCode) {
         Integer roomId = 1;
-        GroupRoomDetailDto groupRoomDetailDto = new GroupRoomDetailDto(
-                roomId,
-                roomName,
-                roomOwnerId,
-                enterCode
-        );
-        return new GroupRoomDto(
-                roomId,
-                RoomType.G,
-                groupRoomDetailDto
-        );
+        GroupRoomDetailDto groupRoomDetailDto = GroupRoomDetailDto.builder()
+                .roomId(roomId)
+                .roomName(roomName)
+                .roomOwnerId(roomOwnerId)
+                .enterCode(enterCode)
+                .build();
+
+        return GroupRoomDto.builder()
+                .id(roomId)
+                .type(RoomType.G)
+                .groupRoomDetailDto(groupRoomDetailDto)
+                .build();
     }
 }

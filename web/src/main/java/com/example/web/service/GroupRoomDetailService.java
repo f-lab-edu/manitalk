@@ -21,11 +21,11 @@ public class GroupRoomDetailService {
 
         GroupRoomDetail newGroupRoomDetail = groupRoomDetailRepository.save(groupRoomDetail);
 
-        return new GroupRoomDetailDto(
-                vo.getRoom().getId(),
-                newGroupRoomDetail.getRoomName(),
-                newGroupRoomDetail.getRoomOwnerId(),
-                newGroupRoomDetail.getEnterCode()
-        );
+        return GroupRoomDetailDto.builder()
+                .roomId(vo.getRoom().getId())
+                .roomName(newGroupRoomDetail.getRoomName())
+                .roomOwnerId(newGroupRoomDetail.getRoomOwnerId())
+                .enterCode(newGroupRoomDetail.getEnterCode())
+                .build();
     }
 }

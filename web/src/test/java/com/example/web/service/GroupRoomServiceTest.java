@@ -5,7 +5,6 @@ import com.example.web.dto.CreateGroupRoomDto;
 import com.example.web.dto.GroupRoomDetailDto;
 import com.example.web.dto.GroupRoomDto;
 import com.example.web.enums.RoomType;
-import com.example.web.repository.RoomRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +25,7 @@ class GroupRoomServiceTest {
     private GroupRoomDetailService groupRoomDetailService;
 
     @Mock
-    private RoomRepository roomRepository;
+    private RoomService roomService;
 
     @InjectMocks
     private GroupRoomService groupRoomService;
@@ -42,14 +41,16 @@ class GroupRoomServiceTest {
 
         Room room = new Room();
         setId(room, 1);
-        when(roomRepository.save(any(Room.class))).thenReturn(room);
+        when(roomService.saveRoom(any(Room.class))).thenReturn(room);
 
-        GroupRoomDetailDto groupRoomDetailDto = new GroupRoomDetailDto(
-                room.getId(),
-                dto.getRoomName(),
-                dto.getRoomOwnerId(),
-                dto.getEnterCode()
-        );
+        GroupRoomDetailDto groupRoomDetailDto = GroupRoomDetailDto.builder()
+                .roomId(room.getId())
+                .roomName(dto.getRoomName())
+                .roomOwnerId(dto.getRoomOwnerId())
+                .roomOwnerId(dto.getRoomOwnerId())
+                .enterCode(dto.getEnterCode())
+                .build();
+
         when(groupRoomDetailService.createGroupRoomDetail(any(GroupRoomDetailVo.class)))
                 .thenReturn(groupRoomDetailDto);
 
