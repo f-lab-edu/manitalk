@@ -16,11 +16,11 @@ public class CreateGroupRoomDto {
     @NotNull
     private Integer roomOwnerId;
 
-    @NotBlank
+    @NotBlank(message = "채팅방 이름은 반드시 입력해야 합니다.")
     @Size(max = 255, message = "채팅방 이름은 255자를 넘을 수 없습니다.")
     private String roomName;
 
-    @NotBlank
+    @NotBlank(message = "채팅방 입장 코드는 반드시 입력해야 합니다.")
     @Size(max = 255, message = "채팅장 입장 코드는 255자를 넘을 수 없습니다.")
     private String enterCode;
 }
