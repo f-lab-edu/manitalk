@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GroupRoomDetailDto {
+public class CreateGroupRoomDetailResponse {
     private Integer roomId;
     private String roomName;
     private Integer roomOwnerId;

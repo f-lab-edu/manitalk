@@ -10,8 +10,8 @@ import com.example.web.exception.room.CanNotEnterRoomException;
 import com.example.web.exception.room.DuplicatedUserRoomException;
 import com.example.web.exception.room.RoomNotFoundException;
 import com.example.web.exception.user.UserNotFoundException;
-import com.example.web.vo.RoomVo;
-import com.example.web.vo.UserRoomVo;
+import com.example.web.dto.CreateRoomParam;
+import com.example.web.dto.CreateUserRoomParam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import com.example.web.vo.GroupRoomDetailVo;
+import com.example.web.dto.CreateGroupRoomDetailParam;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
@@ -66,7 +66,7 @@ class GroupRoomServiceTest {
 
     UserRoom userRoom;
 
-    EnterGroupRoomDto enterGroupRoomDto;
+    EnterGroupRoomRequest enterGroupRoomRequest;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -86,7 +86,7 @@ class GroupRoomServiceTest {
                 nickname
         );
 
-        enterGroupRoomDto = new EnterGroupRoomDto(
+        enterGroupRoomRequest = new EnterGroupRoomRequest(
                 userId,
                 roomId,
                 roomName,
@@ -100,11 +100,11 @@ class GroupRoomServiceTest {
     void create_group_room() {
 
         // given
-        CreateGroupRoomDto dto = new CreateGroupRoomDto(roomOwnerId, roomName, enterCode);
+        CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
 
-        when(roomService.saveRoom(any(RoomVo.class))).thenReturn(room);
+        when(roomService.saveRoom(any(CreateRoomParam.class))).thenReturn(room);
 
-        GroupRoomDetailDto groupRoomDetailDto = GroupRoomDetailDto.builder()
+        CreateGroupRoomDetailResponse createGroupRoomDetailResponse = CreateGroupRoomDetailResponse.builder()
                 .roomId(room.getId())
                 .roomName(dto.getRoomName())
                 .roomOwnerId(dto.getRoomOwnerId())
@@ -112,16 +112,16 @@ class GroupRoomServiceTest {
                 .enterCode(dto.getEnterCode())
                 .build();
 
-        when(groupRoomDetailService.createGroupRoomDetail(any(GroupRoomDetailVo.class)))
-                .thenReturn(groupRoomDetailDto);
+        when(groupRoomDetailService.createGroupRoomDetail(any(CreateGroupRoomDetailParam.class)))
+                .thenReturn(createGroupRoomDetailResponse);
 
         // when
-        GroupRoomDto groupRoomDto = groupRoomService.createGroupRoom(dto);
+        CreateGroupRoomResponse createGroupRoomResponse = groupRoomService.createGroupRoom(dto);
 
         // then
-        Assertions.assertEquals(groupRoomDto.getId(), room.getId());
-        Assertions.assertEquals(groupRoomDto.getType(), RoomType.G);
-        Assertions.assertEquals(groupRoomDto.getGroupRoomDetailDto().getRoomName(), roomName);
+        Assertions.assertEquals(createGroupRoomResponse.getId(), room.getId());
+        Assertions.assertEquals(createGroupRoomResponse.getType(), RoomType.G);
+        Assertions.assertEquals(createGroupRoomResponse.getCreateGroupRoomDetailResponse().getRoomName(), roomName);
     }
 
     @Test
@@ -132,14 +132,14 @@ class GroupRoomServiceTest {
         when(roomService.findByRoomId(any())).thenReturn(Optional.of(room));
         when(userService.findByUserId(any())).thenReturn(Optional.of(user));
         when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(false);
-        when(userRoomService.saveUserRoom(any(UserRoomVo.class))).thenReturn(userRoom);
+        when(userRoomService.saveUserRoom(any(CreateUserRoomParam.class))).thenReturn(userRoom);
 
         //when
-        UserRoomDto userRoomDto = groupRoomService.enterGroupRoom(enterGroupRoomDto);
+        EnterRoomResponse enterRoomResponse = groupRoomService.enterGroupRoom(enterGroupRoomRequest);
 
         //then
-        Assertions.assertEquals(userRoomDto.getRoomId(), roomId);
-        Assertions.assertEquals(userRoomDto.getUserId(), userId);
+        Assertions.assertEquals(enterRoomResponse.getRoomId(), roomId);
+        Assertions.assertEquals(enterRoomResponse.getUserId(), userId);
     }
 
     @Test
@@ -151,7 +151,7 @@ class GroupRoomServiceTest {
 
         //when & then
         Assertions.assertThrows(RoomNotFoundException.class, () -> {
-            groupRoomService.enterGroupRoom(enterGroupRoomDto);
+            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
         });
     }
 
@@ -166,7 +166,7 @@ class GroupRoomServiceTest {
 
         //when & then
         Assertions.assertThrows(CanNotEnterRoomException.class, () -> {
-            groupRoomService.enterGroupRoom(enterGroupRoomDto);
+            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
         });
     }
 
@@ -180,7 +180,7 @@ class GroupRoomServiceTest {
 
         //when & then
         Assertions.assertThrows(UserNotFoundException.class, () -> {
-            groupRoomService.enterGroupRoom(enterGroupRoomDto);
+            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
         });
     }
 
@@ -195,7 +195,7 @@ class GroupRoomServiceTest {
 
         //when & then
         Assertions.assertThrows(DuplicatedUserRoomException.class, () -> {
-            groupRoomService.enterGroupRoom(enterGroupRoomDto);
+            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
         });
     }
 

@@ -9,12 +9,12 @@ import com.example.web.exception.room.CanNotEnterRoomException;
 import com.example.web.exception.room.DuplicatedUserRoomException;
 import com.example.web.exception.room.RoomNotFoundException;
 import com.example.web.exception.user.UserNotFoundException;
-import com.example.web.vo.RoomVo;
+import com.example.web.dto.CreateRoomParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.web.vo.GroupRoomDetailVo;
-import com.example.web.vo.UserRoomVo;
+import com.example.web.dto.CreateGroupRoomDetailParam;
+import com.example.web.dto.CreateUserRoomParam;
 
 import java.util.Optional;
 
@@ -28,28 +28,28 @@ public class GroupRoomService {
     private final UserRoomService userRoomService;
 
     @Transactional
-    public GroupRoomDto createGroupRoom(CreateGroupRoomDto dto) {
+    public CreateGroupRoomResponse createGroupRoom(CreateGroupRoomRequest dto) {
 
-        RoomVo roomVo = new RoomVo(RoomType.G);
-        Room room = roomService.saveRoom(roomVo);
+        CreateRoomParam createRoomParam = new CreateRoomParam(RoomType.G);
+        Room room = roomService.saveRoom(createRoomParam);
 
-        GroupRoomDetailVo groupRoomDetailVo = new GroupRoomDetailVo(
+        CreateGroupRoomDetailParam createGroupRoomDetailParam = new CreateGroupRoomDetailParam(
                 room,
                 dto.getRoomOwnerId(),
                 dto.getRoomName(),
                 dto.getEnterCode()
         );
 
-        GroupRoomDetailDto groupRoomDetailDto = groupRoomDetailService.createGroupRoomDetail(groupRoomDetailVo);
+        CreateGroupRoomDetailResponse createGroupRoomDetailResponse = groupRoomDetailService.createGroupRoomDetail(createGroupRoomDetailParam);
 
-        return GroupRoomDto.builder()
+        return CreateGroupRoomResponse.builder()
                 .id(room.getId())
                 .type(room.getType())
-                .groupRoomDetailDto(groupRoomDetailDto)
+                .createGroupRoomDetailResponse(createGroupRoomDetailResponse)
                 .build();
     }
 
-    public UserRoomDto enterGroupRoom(EnterGroupRoomDto dto) {
+    public EnterRoomResponse enterGroupRoom(EnterGroupRoomRequest dto) {
 
         Optional<Room> room = roomService.findByRoomId(dto.getRoomId());
         if (room.isEmpty() || room.get().getType() != RoomType.G) {
@@ -69,15 +69,15 @@ public class GroupRoomService {
             throw new DuplicatedUserRoomException("이미 입장한 사용자 입니다.");
         }
 
-        UserRoomVo userRoomVo = new UserRoomVo(
+        CreateUserRoomParam createUserRoomParam = new CreateUserRoomParam(
                 user.get(),
                 room.get(),
                 dto.getNickname()
         );
 
-        UserRoom userRoom = userRoomService.saveUserRoom(userRoomVo);
+        UserRoom userRoom = userRoomService.saveUserRoom(createUserRoomParam);
 
-        return UserRoomDto.builder()
+        return EnterRoomResponse.builder()
                 .userRoomId(userRoom.getId())
                 .userId(userRoom.getUser().getId())
                 .roomId(userRoom.getRoom().getId())

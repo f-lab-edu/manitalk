@@ -4,7 +4,7 @@ import com.example.web.domain.Room;
 import com.example.web.domain.User;
 import com.example.web.domain.UserRoom;
 import com.example.web.repository.UserRoomRepository;
-import com.example.web.vo.UserRoomVo;
+import com.example.web.dto.CreateUserRoomParam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +33,7 @@ class UserRoomServiceTest {
 
     Integer roomId = 1;
 
-    UserRoomVo userRoomVo;
+    CreateUserRoomParam createUserRoomParam;
 
     UserRoom userRoom;
 
@@ -47,16 +47,16 @@ class UserRoomServiceTest {
         Room room = new Room();
         setRoomId(room, roomId);
 
-        userRoomVo = new UserRoomVo(
+        createUserRoomParam = new CreateUserRoomParam(
                 user,
                 room,
                 nickname
         );
 
         userRoom = new UserRoom(
-                userRoomVo.getUser(),
-                userRoomVo.getRoom(),
-                userRoomVo.getNickname()
+                createUserRoomParam.getUser(),
+                createUserRoomParam.getRoom(),
+                createUserRoomParam.getNickname()
         );
     }
 
@@ -67,7 +67,7 @@ class UserRoomServiceTest {
         when(userRoomRepository.save(any(UserRoom.class))).thenReturn(userRoom);
 
         // when
-        UserRoom newUserRoom = userRoomService.saveUserRoom(userRoomVo);
+        UserRoom newUserRoom = userRoomService.saveUserRoom(createUserRoomParam);
 
         // then
         Assertions.assertEquals(newUserRoom.getUser().getId(), userId);

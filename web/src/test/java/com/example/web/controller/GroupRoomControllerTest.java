@@ -52,17 +52,17 @@ class GroupRoomControllerTest {
     void create_group_room() throws Exception {
 
         // given
-        CreateGroupRoomDto dto = new CreateGroupRoomDto(roomOwnerId, roomName, enterCode);
+        CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
 
-        GroupRoomDto groupRoomDto = getGroupRoomDto();
-        when(groupRoomService.createGroupRoom(any(CreateGroupRoomDto.class))).thenReturn(groupRoomDto);
+        CreateGroupRoomResponse createGroupRoomResponse = getGroupRoomResponse();
+        when(groupRoomService.createGroupRoom(any(CreateGroupRoomRequest.class))).thenReturn(createGroupRoomResponse);
 
         // when & then
         mockMvc.perform(post("/group/room")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(groupRoomDto))
+                .andExpect(content().json(objectMapper.writeValueAsString(createGroupRoomResponse))
         );
     }
 
@@ -73,9 +73,9 @@ class GroupRoomControllerTest {
         // given
         roomName = "";
         enterCode = "";
-        CreateGroupRoomDto dto = new CreateGroupRoomDto(roomOwnerId, roomName, enterCode);
+        CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
 
-        when(groupRoomService.createGroupRoom(any(CreateGroupRoomDto.class))).thenReturn(getGroupRoomDto());
+        when(groupRoomService.createGroupRoom(any(CreateGroupRoomRequest.class))).thenReturn(getGroupRoomResponse());
 
         // when & then
         mockMvc.perform(post("/group/room")
@@ -85,18 +85,18 @@ class GroupRoomControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    GroupRoomDto getGroupRoomDto() {
-        GroupRoomDetailDto groupRoomDetailDto = GroupRoomDetailDto.builder()
+    CreateGroupRoomResponse getGroupRoomResponse() {
+        CreateGroupRoomDetailResponse createGroupRoomDetailResponse = CreateGroupRoomDetailResponse.builder()
                 .roomId(roomId)
                 .roomName(roomName)
                 .roomOwnerId(roomOwnerId)
                 .enterCode(enterCode)
                 .build();
 
-        return GroupRoomDto.builder()
+        return CreateGroupRoomResponse.builder()
                 .id(roomId)
                 .type(RoomType.G)
-                .groupRoomDetailDto(groupRoomDetailDto)
+                .createGroupRoomDetailResponse(createGroupRoomDetailResponse)
                 .build();
     }
 
@@ -105,7 +105,7 @@ class GroupRoomControllerTest {
     void enter_group_room() throws Exception {
 
         // given
-        EnterGroupRoomDto enterGroupRoomDto = new EnterGroupRoomDto(
+        EnterGroupRoomRequest enterGroupRoomRequest = new EnterGroupRoomRequest(
                 userId,
                 roomId,
                 roomName,
@@ -113,15 +113,15 @@ class GroupRoomControllerTest {
                 nickname
         );
 
-        UserRoomDto userRoomDto = getUserRoomDto();
-        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomDto.class))).thenReturn(getUserRoomDto());
+        EnterRoomResponse enterRoomResponse = getUserRoomResponse();
+        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getUserRoomResponse());
 
         // when & then
         mockMvc.perform(post("/group/room/enter")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(enterGroupRoomDto)))
+                        .content(objectMapper.writeValueAsString(enterGroupRoomRequest)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(userRoomDto))
+                .andExpect(content().json(objectMapper.writeValueAsString(enterRoomResponse))
                 );
     }
 
@@ -130,7 +130,7 @@ class GroupRoomControllerTest {
     void enter_group_room_유효성검사_실패() throws Exception {
 
         // given
-        EnterGroupRoomDto enterGroupRoomDto = new EnterGroupRoomDto(
+        EnterGroupRoomRequest enterGroupRoomRequest = new EnterGroupRoomRequest(
                 userId,
                 roomId,
                 "",
@@ -138,18 +138,18 @@ class GroupRoomControllerTest {
                 ""
         );
 
-        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomDto.class))).thenReturn(getUserRoomDto());
+        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getUserRoomResponse());
 
         // when & then
         mockMvc.perform(post("/group/room/enter")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(enterGroupRoomDto)))
+                        .content(objectMapper.writeValueAsString(enterGroupRoomRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 
-    UserRoomDto getUserRoomDto() {
-        return UserRoomDto.builder()
+    EnterRoomResponse getUserRoomResponse() {
+        return EnterRoomResponse.builder()
                 .userRoomId(userRoomId)
                 .userId(userId)
                 .roomId(roomId)

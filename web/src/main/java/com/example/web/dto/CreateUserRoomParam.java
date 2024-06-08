@@ -1,4 +1,4 @@
-package com.example.web.vo;
+package com.example.web.dto;
 
 import com.example.web.domain.Room;
 import com.example.web.domain.User;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserRoomVo {
+public class CreateUserRoomParam {
     private User user;
     private Room room;
     private String nickname;

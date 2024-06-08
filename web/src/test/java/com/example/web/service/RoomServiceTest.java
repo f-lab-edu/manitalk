@@ -3,7 +3,7 @@ package com.example.web.service;
 import com.example.web.domain.Room;
 import com.example.web.enums.RoomType;
 import com.example.web.repository.RoomRepository;
-import com.example.web.vo.RoomVo;
+import com.example.web.dto.CreateRoomParam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,13 +30,13 @@ class RoomServiceTest {
 
     Integer roomId = 1;
 
-    RoomVo roomVo;
+    CreateRoomParam createRoomParam;
 
     Room room;
 
     @BeforeEach
     public void setUp() throws Exception {
-        roomVo = new RoomVo(RoomType.G);
+        createRoomParam = new CreateRoomParam(RoomType.G);
 
         room = new Room();
         setId(room, roomId);
@@ -50,7 +50,7 @@ class RoomServiceTest {
         when(roomRepository.save(any(Room.class))).thenReturn(room);
 
         // when
-        Room newRoom = roomService.saveRoom(roomVo);
+        Room newRoom = roomService.saveRoom(createRoomParam);
 
         // then
         Assertions.assertEquals(newRoom.getId(), roomId);

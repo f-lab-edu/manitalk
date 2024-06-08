@@ -1,4 +1,4 @@
-package com.example.web.vo;
+package com.example.web.dto;
 
 import com.example.web.domain.Room;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GroupRoomDetailVo {
+public class CreateGroupRoomDetailParam {
     private Room room;
     private Integer roomOwnerId;
     private String roomName;

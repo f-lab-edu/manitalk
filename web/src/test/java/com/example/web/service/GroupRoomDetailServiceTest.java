@@ -2,7 +2,7 @@ package com.example.web.service;
 
 import com.example.web.domain.GroupRoomDetail;
 import com.example.web.domain.Room;
-import com.example.web.dto.GroupRoomDetailDto;
+import com.example.web.dto.CreateGroupRoomDetailResponse;
 import com.example.web.repository.GroupRoomDetailRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import com.example.web.vo.GroupRoomDetailVo;
+import com.example.web.dto.CreateGroupRoomDetailParam;
 
 import java.lang.reflect.Field;
 
@@ -44,10 +44,10 @@ class GroupRoomDetailServiceTest {
 
     @Test
     @DisplayName("새로운 그룹 채팅방을 생성합니다.")
-    void create_group_room_detail() throws Exception {
+    void create_group_room_detail() {
 
         //given
-        GroupRoomDetailVo groupRoomDetailVo = new GroupRoomDetailVo(room, roomOwnerId, roomName, enterCode);
+        CreateGroupRoomDetailParam createGroupRoomDetailParam = new CreateGroupRoomDetailParam(room, roomOwnerId, roomName, enterCode);
 
         GroupRoomDetail groupRoomDetail = new GroupRoomDetail(room);
         groupRoomDetail.setRoomName(roomName);
@@ -57,12 +57,12 @@ class GroupRoomDetailServiceTest {
         when(groupRoomDetailRepository.save(any())).thenReturn(groupRoomDetail);
 
         // when
-        GroupRoomDetailDto groupRoomDetailDto = groupRoomDetailService.createGroupRoomDetail(groupRoomDetailVo);
+        CreateGroupRoomDetailResponse createGroupRoomDetailResponse = groupRoomDetailService.createGroupRoomDetail(createGroupRoomDetailParam);
 
         // then
-        Assertions.assertEquals(groupRoomDetailDto.getRoomId(), room.getId());
-        Assertions.assertEquals(groupRoomDetailDto.getRoomName(), roomName);
-        Assertions.assertEquals(groupRoomDetailDto.getRoomOwnerId(), roomOwnerId);
+        Assertions.assertEquals(createGroupRoomDetailResponse.getRoomId(), room.getId());
+        Assertions.assertEquals(createGroupRoomDetailResponse.getRoomName(), roomName);
+        Assertions.assertEquals(createGroupRoomDetailResponse.getRoomOwnerId(), roomOwnerId);
     }
 
     private void setId(Room room, Integer id) throws Exception {

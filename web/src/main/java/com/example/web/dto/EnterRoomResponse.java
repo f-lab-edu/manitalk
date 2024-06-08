@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UserRoomDto {
+public class EnterRoomResponse {
     private Integer userRoomId;
     private Integer userId;
     private Integer roomId;

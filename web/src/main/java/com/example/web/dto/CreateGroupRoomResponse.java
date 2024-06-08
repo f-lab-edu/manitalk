@@ -6,8 +6,8 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GroupRoomDto {
+public class CreateGroupRoomResponse {
     private Integer id;
     private RoomType type;
-    private GroupRoomDetailDto groupRoomDetailDto;
+    private CreateGroupRoomDetailResponse createGroupRoomDetailResponse;
 }

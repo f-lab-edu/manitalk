@@ -4,7 +4,7 @@ import com.example.web.domain.UserRoom;
 import com.example.web.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.example.web.vo.UserRoomVo;
+import com.example.web.dto.CreateUserRoomParam;
 
 import java.util.Optional;
 
@@ -14,11 +14,11 @@ public class UserRoomService {
 
     private final UserRoomRepository userRoomRepository;
 
-    public UserRoom saveUserRoom(UserRoomVo userRoomVo) {
+    public UserRoom saveUserRoom(CreateUserRoomParam param) {
         UserRoom userRoom = new UserRoom(
-                userRoomVo.getUser(),
-                userRoomVo.getRoom(),
-                userRoomVo.getNickname()
+                param.getUser(),
+                param.getRoom(),
+                param.getNickname()
         );
         return userRoomRepository.save(userRoom);
     }
