@@ -8,6 +8,8 @@ import lombok.Getter;
 @Builder
 public class CreateGroupRoomResponse {
     private Integer id;
-    private RoomType type;
-    private CreateGroupRoomDetailResponse createGroupRoomDetailResponse;
+    private RoomType roomType;
+    private String roomName;
+    private Integer roomOwnerId;
+    private String enterCode;
 }
