@@ -54,7 +54,7 @@ class GroupRoomControllerTest {
         // given
         CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
 
-        CreateGroupRoomResponse createGroupRoomResponse = getGroupRoomResponse();
+        CreateGroupRoomResponse createGroupRoomResponse = getCreateGroupRoomResponse();
         when(groupRoomService.createGroupRoom(any(CreateGroupRoomRequest.class))).thenReturn(createGroupRoomResponse);
 
         // when & then
@@ -75,7 +75,7 @@ class GroupRoomControllerTest {
         enterCode = "";
         CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
 
-        when(groupRoomService.createGroupRoom(any(CreateGroupRoomRequest.class))).thenReturn(getGroupRoomResponse());
+        when(groupRoomService.createGroupRoom(any(CreateGroupRoomRequest.class))).thenReturn(getCreateGroupRoomResponse());
 
         // when & then
         mockMvc.perform(post("/group/room")
@@ -85,18 +85,13 @@ class GroupRoomControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    CreateGroupRoomResponse getGroupRoomResponse() {
-        CreateGroupRoomDetailResponse createGroupRoomDetailResponse = CreateGroupRoomDetailResponse.builder()
-                .roomId(roomId)
+    CreateGroupRoomResponse getCreateGroupRoomResponse() {
+        return CreateGroupRoomResponse.builder()
+                .id(roomId)
+                .roomType(RoomType.G)
                 .roomName(roomName)
                 .roomOwnerId(roomOwnerId)
                 .enterCode(enterCode)
-                .build();
-
-        return CreateGroupRoomResponse.builder()
-                .id(roomId)
-                .type(RoomType.G)
-                .createGroupRoomDetailResponse(createGroupRoomDetailResponse)
                 .build();
     }
 
@@ -113,8 +108,8 @@ class GroupRoomControllerTest {
                 nickname
         );
 
-        EnterRoomResponse enterRoomResponse = getUserRoomResponse();
-        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getUserRoomResponse());
+        EnterRoomResponse enterRoomResponse = getEnterRoomResponse();
+        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getEnterRoomResponse());
 
         // when & then
         mockMvc.perform(post("/group/room/enter")
@@ -138,7 +133,7 @@ class GroupRoomControllerTest {
                 ""
         );
 
-        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getUserRoomResponse());
+        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getEnterRoomResponse());
 
         // when & then
         mockMvc.perform(post("/group/room/enter")
@@ -148,12 +143,9 @@ class GroupRoomControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    EnterRoomResponse getUserRoomResponse() {
+    EnterRoomResponse getEnterRoomResponse() {
         return EnterRoomResponse.builder()
                 .userRoomId(userRoomId)
-                .userId(userId)
-                .roomId(roomId)
-                .roomType(RoomType.G)
                 .nickname(nickname)
                 .build();
     }

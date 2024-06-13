@@ -2,9 +2,10 @@ package com.example.web.service;
 
 import com.example.web.domain.Room;
 import com.example.web.domain.User;
-import com.example.web.domain.UserRoom;
 import com.example.web.repository.UserRoomRepository;
 import com.example.web.dto.CreateUserRoomParam;
+import com.example.web.vo.UserRoomVo;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,12 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.lang.reflect.Field;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +27,9 @@ class UserRoomServiceTest {
     @Mock
     private UserRoomRepository userRoomRepository;
 
+    @Mock
+    private EntityManager entityManager;
+
     @InjectMocks
     private UserRoomService userRoomService;
 
@@ -33,71 +37,41 @@ class UserRoomServiceTest {
 
     Integer roomId = 1;
 
-    CreateUserRoomParam createUserRoomParam;
-
-    UserRoom userRoom;
-
     String nickname = "test";
+
+    User user;
+
+    Room room;
 
     @BeforeEach
     public void setUp() throws Exception {
-        User user = new User();
+        MockitoAnnotations.openMocks(this);
+
+        user = new User();
         setUserId(user, userId);
 
-        Room room = new Room();
+        room = new Room();
         setRoomId(room, roomId);
-
-        createUserRoomParam = new CreateUserRoomParam(
-                user,
-                room,
-                nickname
-        );
-
-        userRoom = new UserRoom(
-                createUserRoomParam.getUser(),
-                createUserRoomParam.getRoom(),
-                createUserRoomParam.getNickname()
-        );
     }
 
     @Test
     @DisplayName("사용자-채팅방 관계를 생성합니다.")
-    void saveUserRoom() {
+    void createUserRoom() {
         // given
-        when(userRoomRepository.save(any(UserRoom.class))).thenReturn(userRoom);
+        when(entityManager.getReference(eq(User.class), any())).thenReturn(user);
+        when(entityManager.getReference(eq(Room.class), any())).thenReturn(room);
+
+        CreateUserRoomParam createUserRoomParam = CreateUserRoomParam.builder()
+                .userId(userId)
+                .roomId(roomId)
+                .nickname(nickname)
+                .build();
 
         // when
-        UserRoom newUserRoom = userRoomService.saveUserRoom(createUserRoomParam);
+        UserRoomVo userRoomVo = userRoomService.createUserRoom(createUserRoomParam);
 
         // then
-        Assertions.assertEquals(newUserRoom.getUser().getId(), userId);
-        Assertions.assertEquals(newUserRoom.getRoom().getId(), roomId);
-    }
-
-    @Test
-    @DisplayName("사용자-채팅방 관계가 존재하는지 확인합니다.")
-    void isExistsUserRoom() {
-        // given
-        when(userRoomRepository.findByUserIdAndRoomId(any(), any())).thenReturn(Optional.of(userRoom));
-
-        // when
-        boolean isExistsUserRoom = userRoomService.isExistsUserRoom(userId, roomId);
-
-        // then
-        Assertions.assertTrue(isExistsUserRoom);
-    }
-
-    @Test
-    @DisplayName("사용자 ID, 채팅방 ID로 사용자-채팅방 관계를 조회합니다.")
-    void findByUserIdAndRoomId() {
-        // given
-        when(userRoomRepository.findByUserIdAndRoomId(any(), any())).thenReturn(Optional.of(userRoom));
-
-        // when
-        Optional<UserRoom> findUserRoom = userRoomService.findByUserIdAndRoomId(userId, roomId);
-
-        // then
-        Assertions.assertTrue(findUserRoom.isPresent());
+        Assertions.assertEquals(userRoomVo.getNickname(), nickname);
     }
 
     private void setUserId(User user, Integer id) throws Exception {
