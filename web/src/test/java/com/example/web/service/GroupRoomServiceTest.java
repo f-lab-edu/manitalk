@@ -1,20 +1,25 @@
 package com.example.web.service;
 
-import com.example.web.domain.Room;
-import com.example.web.dto.CreateGroupRoomDto;
-import com.example.web.dto.GroupRoomDetailDto;
-import com.example.web.dto.GroupRoomDto;
+import com.example.web.dto.*;
 import com.example.web.enums.RoomType;
-import com.example.web.repository.RoomRepository;
+import com.example.web.dto.CreateRoomParam;
+import com.example.web.dto.CreateUserRoomParam;
+import com.example.web.exception.room.CanNotEnterRoomException;
+import com.example.web.exception.room.DuplicatedUserRoomException;
+import com.example.web.exception.room.RoomNotFoundException;
+import com.example.web.exception.user.UserNotFoundException;
+import com.example.web.vo.GroupRoomDetailVo;
+import com.example.web.vo.RoomVo;
+import com.example.web.vo.UserRoomVo;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import vo.GroupRoomDetailVo;
-
-import java.lang.reflect.Field;
+import com.example.web.dto.CreateGroupRoomDetailParam;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -23,48 +28,165 @@ import static org.mockito.Mockito.when;
 class GroupRoomServiceTest {
 
     @Mock
+    private RoomService roomService;
+
+    @Mock
     private GroupRoomDetailService groupRoomDetailService;
 
     @Mock
-    private RoomRepository roomRepository;
+    private UserService userService;
+
+    @Mock
+    private UserRoomService userRoomService;
 
     @InjectMocks
     private GroupRoomService groupRoomService;
 
-    @Test
-    void create_group_room() throws Exception {
+    Integer userId = 1;
 
-        // given
-        Integer roomOwnerId = 1;
-        String roomName = "테스트룸";
-        String enterCode = "T1234";
-        CreateGroupRoomDto dto = new CreateGroupRoomDto(roomOwnerId, roomName, enterCode);
+    Integer roomId = 1;
 
-        Room room = new Room();
-        setId(room, 1);
-        when(roomRepository.save(any(Room.class))).thenReturn(room);
+    Integer userRoomId = 1;
 
-        GroupRoomDetailDto groupRoomDetailDto = new GroupRoomDetailDto(
-                room.getId(),
-                dto.getRoomName(),
-                dto.getRoomOwnerId(),
-                dto.getEnterCode()
+    Integer roomOwnerId = 1;
+
+    String roomName = "test_room";
+
+    String enterCode = "test_code";
+
+    String nickname = "test";
+
+    EnterGroupRoomRequest enterGroupRoomRequest;
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        enterGroupRoomRequest = new EnterGroupRoomRequest(
+                userId,
+                roomId,
+                roomName,
+                enterCode,
+                nickname
         );
-        when(groupRoomDetailService.createGroupRoomDetail(any(GroupRoomDetailVo.class)))
-                .thenReturn(groupRoomDetailDto);
-
-        // when
-        GroupRoomDto groupRoomDto = groupRoomService.createGroupRoom(dto);
-
-        // then
-        Assertions.assertEquals(groupRoomDto.getId(), room.getId());
-        Assertions.assertEquals(groupRoomDto.getType(), RoomType.G);
-        Assertions.assertEquals(groupRoomDto.getGroupRoomDetailDto().getRoomName(), roomName);
     }
 
-    private void setId(Room room, Integer id) throws Exception {
-        Field idField = Room.class.getDeclaredField("id");
-        idField.setAccessible(true);
-        idField.set(room, id);
+    @Test
+    @DisplayName("새로운 그룹 채팅방을 생성합니다.")
+    void create_group_room() {
+
+        // given
+        RoomVo roomVo = new RoomVo(roomId, RoomType.G);
+        when(roomService.createRoom(any(CreateRoomParam.class))).thenReturn(roomVo);
+
+        GroupRoomDetailVo groupRoomDetailVo = new GroupRoomDetailVo(roomName, roomOwnerId, enterCode);
+        when(groupRoomDetailService.createGroupRoomDetail(any(CreateGroupRoomDetailParam.class)))
+                .thenReturn(groupRoomDetailVo);
+
+        CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
+
+        // when
+        CreateGroupRoomResponse createGroupRoomResponse = groupRoomService.createGroupRoom(dto);
+
+        // then
+        Assertions.assertEquals(createGroupRoomResponse.getId(), roomId);
+        Assertions.assertEquals(createGroupRoomResponse.getRoomType(), RoomType.G);
+        Assertions.assertEquals(createGroupRoomResponse.getRoomOwnerId(), roomOwnerId);
+        Assertions.assertEquals(createGroupRoomResponse.getRoomName(), roomName);
+        Assertions.assertEquals(createGroupRoomResponse.getEnterCode(), enterCode);
+    }
+
+    @Test
+    @DisplayName("그룹 채팅방에 입장합니다.")
+    void enter_group_room() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+        when(roomService.isGroupRoom(any())).thenReturn(true);
+        when(groupRoomDetailService.isRightEnterCode(any(), any())).thenReturn(true);
+        when(userService.isExistsUser(any())).thenReturn(true);
+        when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(false);
+
+        UserRoomVo userRoomVo = new UserRoomVo(userRoomId, nickname);
+        when(userRoomService.createUserRoom(any(CreateUserRoomParam.class))).thenReturn(userRoomVo);
+
+        //when
+        EnterRoomResponse enterRoomResponse = groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+
+        //then
+        Assertions.assertEquals(enterRoomResponse.getUserRoomId(), userRoomId);
+    }
+
+    @Test
+    @DisplayName("그룹 채팅방 입장에 실패합니다. - 채팅방 존재하지 않음")
+    void enter_group_room_채팅방_존재하지_않음() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(false);
+
+        //when & then
+        Assertions.assertThrows(RoomNotFoundException.class, () -> {
+            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("그룹 채팅방 입장에 실패합니다. - 그룹 채팅방 아님")
+    void enter_group_room_그룹_채팅방_아님() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+        when(roomService.isGroupRoom(any())).thenReturn(false);
+
+        //when & then
+        Assertions.assertThrows(RoomNotFoundException.class, () -> {
+            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("그룹 채팅방 입장에 실패합니다. - 입장 코드 틀림")
+    void enter_group_room_입장_코드_틀림() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+        when(roomService.isGroupRoom(any())).thenReturn(true);
+        when(groupRoomDetailService.isRightEnterCode(any(), any())).thenReturn(false);
+
+        //when & then
+        Assertions.assertThrows(CanNotEnterRoomException.class, () -> {
+            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("그룹 채팅방 입장에 실패합니다. - 사용자를 찾을 수 없음")
+    void enter_group_room_사용자를_찾을_수_없음() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+        when(roomService.isGroupRoom(any())).thenReturn(true);
+        when(groupRoomDetailService.isRightEnterCode(any(), any())).thenReturn(true);
+        when(userService.isExistsUser(any())).thenReturn(false);
+
+        //when & then
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("그룹 채팅방 입장에 실패합니다. - 이미 입장한 사용자")
+    void enter_group_room_이미_입장한_사용자() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+        when(roomService.isGroupRoom(any())).thenReturn(true);
+        when(groupRoomDetailService.isRightEnterCode(any(), any())).thenReturn(true);
+        when(userService.isExistsUser(any())).thenReturn(true);
+        when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(true);
+
+        //when & then
+        Assertions.assertThrows(DuplicatedUserRoomException.class, () -> {
+            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+        });
     }
 }

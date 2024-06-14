@@ -1,11 +1,10 @@
 package com.example.web.controller;
 
-import com.example.web.dto.CreateGroupRoomDto;
-import com.example.web.dto.GroupRoomDetailDto;
-import com.example.web.dto.GroupRoomDto;
+import com.example.web.dto.*;
 import com.example.web.enums.RoomType;
 import com.example.web.service.GroupRoomService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -34,68 +33,120 @@ class GroupRoomControllerTest {
     @MockBean
     private GroupRoomService groupRoomService;
 
+    Integer userId = 1;
+
+    Integer roomId = 1;
+
+    Integer userRoomId = 1;
+
+    Integer roomOwnerId = 1;
+
+    String roomName = "test_room";
+
+    String enterCode = "test_code";
+
+    String nickname = "test";
+
     @Test
+    @DisplayName("그룹 채팅방을 생성합니다.")
     void create_group_room() throws Exception {
 
         // given
-        Integer roomOwnerId = 1;
-        String roomName = "테스트룸";
-        String enterCode = "T1234";
-        CreateGroupRoomDto dto = new CreateGroupRoomDto(roomOwnerId, roomName, enterCode);
+        CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
 
-        GroupRoomDto groupRoomDto = getGroupRoomDto(
-                roomName,
-                roomOwnerId,
-                enterCode
-        );
-        when(groupRoomService.createGroupRoom(any(CreateGroupRoomDto.class))).thenReturn(groupRoomDto);
+        CreateGroupRoomResponse createGroupRoomResponse = getCreateGroupRoomResponse();
+        when(groupRoomService.createGroupRoom(any(CreateGroupRoomRequest.class))).thenReturn(createGroupRoomResponse);
 
         // when & then
         mockMvc.perform(post("/group/room")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(groupRoomDto))
+                .andExpect(content().json(objectMapper.writeValueAsString(createGroupRoomResponse))
         );
     }
 
     @Test
+    @DisplayName("그룹 채팅방을 생성에 실패합니다. : 유효성검사 실패")
     void create_group_room_유효성검사_실패() throws Exception {
 
         // given
-        Integer roomOwnerId = 1;
-        String roomName = "";
-        String enterCode = "";
-        CreateGroupRoomDto dto = new CreateGroupRoomDto(roomOwnerId, roomName, enterCode);
+        roomName = "";
+        enterCode = "";
+        CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
 
-        GroupRoomDto groupRoomDto = getGroupRoomDto(
-                roomName,
-                roomOwnerId,
-                enterCode
-        );
-        when(groupRoomService.createGroupRoom(any(CreateGroupRoomDto.class))).thenReturn(groupRoomDto);
+        when(groupRoomService.createGroupRoom(any(CreateGroupRoomRequest.class))).thenReturn(getCreateGroupRoomResponse());
 
         // when & then
         mockMvc.perform(post("/group/room")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                ;
+                .andExpect(status().isBadRequest());
     }
 
-    GroupRoomDto getGroupRoomDto(String roomName, Integer roomOwnerId, String enterCode) {
-        Integer roomId = 1;
-        GroupRoomDetailDto groupRoomDetailDto = new GroupRoomDetailDto(
+    CreateGroupRoomResponse getCreateGroupRoomResponse() {
+        return CreateGroupRoomResponse.builder()
+                .id(roomId)
+                .roomType(RoomType.G)
+                .roomName(roomName)
+                .roomOwnerId(roomOwnerId)
+                .enterCode(enterCode)
+                .build();
+    }
+
+    @Test
+    @DisplayName("그룹 채팅방에 입장합니다.")
+    void enter_group_room() throws Exception {
+
+        // given
+        EnterGroupRoomRequest enterGroupRoomRequest = new EnterGroupRoomRequest(
+                userId,
                 roomId,
                 roomName,
-                roomOwnerId,
-                enterCode
+                enterCode,
+                nickname
         );
-        return new GroupRoomDto(
+
+        EnterRoomResponse enterRoomResponse = getEnterRoomResponse();
+        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getEnterRoomResponse());
+
+        // when & then
+        mockMvc.perform(post("/group/room/enter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(enterGroupRoomRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(enterRoomResponse))
+                );
+    }
+
+    @Test
+    @DisplayName("그룹 채팅방 입장에 실패합니다. : 유효성검사 실패")
+    void enter_group_room_유효성검사_실패() throws Exception {
+
+        // given
+        EnterGroupRoomRequest enterGroupRoomRequest = new EnterGroupRoomRequest(
+                userId,
                 roomId,
-                RoomType.G,
-                groupRoomDetailDto
+                "",
+                "",
+                ""
         );
+
+        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getEnterRoomResponse());
+
+        // when & then
+        mockMvc.perform(post("/group/room/enter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(enterGroupRoomRequest)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    EnterRoomResponse getEnterRoomResponse() {
+        return EnterRoomResponse.builder()
+                .userRoomId(userRoomId)
+                .nickname(nickname)
+                .build();
     }
 }

@@ -1,13 +1,13 @@
 package com.example.web.dto;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
-public class GroupRoomDetailDto {
+@Builder
+public class CreateGroupRoomDetailParam {
     private Integer roomId;
-    private String roomName;
     private Integer roomOwnerId;
+    private String roomName;
     private String enterCode;
 }

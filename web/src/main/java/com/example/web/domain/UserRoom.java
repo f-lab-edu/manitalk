@@ -1,33 +1,42 @@
 package com.example.web.domain;
 
-import com.example.web.enums.RoomType;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "rooms")
+@Table(name = "user_rooms")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-public class Room {
+public class UserRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_room_id")
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 1, nullable = false)
-    private RoomType type = RoomType.G;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    @JsonIgnoreProperties
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    @JsonBackReference
+    @JsonIgnoreProperties
+    private Room room;
+
+    @Column(nullable = false)
+    private String nickname;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -36,17 +45,9 @@ public class Room {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY)
-    @Setter
-    @JsonManagedReference
-    private GroupRoomDetail groupRoomDetail;
-
-    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
-    @Setter
-    @JsonManagedReference
-    private List<UserRoom> userRoom;
-
-    public Room(RoomType type) {
-        this.type = type;
+    public UserRoom(User user, Room room, String nickname) {
+        this.user = user;
+        this.room = room;
+        this.nickname = nickname;
     }
 }
