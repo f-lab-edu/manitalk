@@ -1,3 +1,12 @@
+---
+name: Feature
+about: 기능 개발 단위
+title: "[FEATURE] "
+labels: feature
+assignees: ByulKim
+
+---
+
 ## 설명💡
 - 
 
