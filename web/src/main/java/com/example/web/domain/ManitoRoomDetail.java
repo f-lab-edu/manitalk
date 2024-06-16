@@ -2,25 +2,22 @@ package com.example.web.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "group_room_details")
+@Table(name = "manito_room_details")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GroupRoomDetail {
+public class ManitoRoomDetail {
 
     @Id
     @Column(name = "room_id")
@@ -33,22 +30,15 @@ public class GroupRoomDetail {
     @JsonIgnoreProperties
     private Room room;
 
-    @OneToMany(mappedBy = "groupRoomDetail", fetch = FetchType.LAZY)
-    @Setter
-    @JsonManagedReference
-    private List<ManitoRoomDetail> manitoRoomDetail;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "group_room_id")
+    @JsonBackReference
+    @JsonIgnoreProperties
+    private GroupRoomDetail groupRoomDetail;
 
-    @Setter
-    @Column(nullable = false)
-    private String roomName;
-
-    @Setter
-    @Column(nullable = false)
-    private Integer roomOwnerId;
-
-    @Setter
-    @Column(nullable = false)
-    private String enterCode;
+    @Column
+    private LocalDateTime expiresAt;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -57,7 +47,9 @@ public class GroupRoomDetail {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public GroupRoomDetail(Room room) {
+    public ManitoRoomDetail(Room room, GroupRoomDetail groupRoomDetail, LocalDateTime expiresAt) {
         this.room = room;
+        this.groupRoomDetail = groupRoomDetail;
+        this.expiresAt = expiresAt;
     }
 }

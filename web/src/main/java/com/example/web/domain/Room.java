@@ -41,6 +41,11 @@ public class Room {
     @JsonManagedReference
     private GroupRoomDetail groupRoomDetail;
 
+    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY)
+    @Setter
+    @JsonManagedReference
+    private ManitoRoomDetail manitoRoomDetail;
+
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     @Setter
     @JsonManagedReference
