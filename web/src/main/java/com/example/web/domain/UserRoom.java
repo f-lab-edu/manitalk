@@ -45,11 +45,6 @@ public class UserRoom {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public UserRoom(User user, Room room) {
-        this.user = user;
-        this.room = room;
-    }
-
     public UserRoom(User user, Room room, String nickname) {
         this.user = user;
         this.room = room;

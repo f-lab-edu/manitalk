@@ -36,7 +36,7 @@ public class GroupRoomDetail {
     @OneToMany(mappedBy = "groupRoomDetail", fetch = FetchType.LAZY)
     @Setter
     @JsonManagedReference
-    private List<ManitoRoomDetail> manitoRoomDetail;
+    private List<ManitoRoomDetail> manitoRoomDetails;
 
     @Setter
     @Column(nullable = false)

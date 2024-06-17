@@ -31,8 +31,7 @@ public class ManitoRoomDetail {
     private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "group_room_id")
+    @JoinColumn(name = "group_room_id", nullable = false)
     @JsonBackReference
     @JsonIgnoreProperties
     private GroupRoomDetail groupRoomDetail;
