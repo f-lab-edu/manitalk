@@ -2,6 +2,7 @@ package com.example.web.service;
 
 import com.example.web.domain.Room;
 import com.example.web.domain.User;
+import com.example.web.dto.CreateUserRoomsParam;
 import com.example.web.repository.UserRoomRepository;
 import com.example.web.dto.CreateUserRoomParam;
 import com.example.web.vo.UserRoomVo;
@@ -16,6 +17,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -72,6 +77,32 @@ class UserRoomServiceTest {
 
         // then
         Assertions.assertEquals(userRoomVo.getNickname(), nickname);
+    }
+
+    @Test
+    @DisplayName("여러 사용자-채팅방 관계를 한번에 생성합니다.")
+    void createUserRooms() {
+        // given
+        int count = 4;
+
+        List<Integer> roomIds = new ArrayList<>();
+        Map<Integer, Integer> pairs = new HashMap<>();
+        for (int i = 1; i < count + 1; i++) {
+            roomIds.add(i);
+            pairs.put(i, i + 1);
+        }
+
+        CreateUserRoomsParam createUserRoomsParam = CreateUserRoomsParam.builder()
+                .roomIds(roomIds)
+                .pairs(pairs)
+                .build();
+
+        // when
+        List<Integer> userRoomIds = userRoomService.createUserRooms(createUserRoomsParam);
+        System.out.println(userRoomIds);
+
+        // then
+        Assertions.assertEquals(userRoomIds.size(), count * 2);
     }
 
     private void setUserId(User user, Integer id) throws Exception {

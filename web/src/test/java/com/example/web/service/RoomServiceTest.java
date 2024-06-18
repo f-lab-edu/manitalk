@@ -1,6 +1,7 @@
 package com.example.web.service;
 
 import com.example.web.domain.Room;
+import com.example.web.dto.CreateRoomsParam;
 import com.example.web.enums.RoomType;
 import com.example.web.repository.RoomRepository;
 import com.example.web.dto.CreateRoomParam;
@@ -14,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -50,6 +53,32 @@ class RoomServiceTest {
 
         // then
         Assertions.assertEquals(roomVo.getId(), roomId);
+    }
+
+    @Test
+    @DisplayName("채팅방 여러개를 한번에 생성합니다.")
+    void create_rooms() {
+
+        // given
+        int count = 4;
+
+        CreateRoomsParam createRoomsParam = CreateRoomsParam.builder()
+                .type(RoomType.M)
+                .count(count)
+                .build();
+
+        List<Room> rooms = new ArrayList<>();
+        for (int i=0; i < count; i++) {
+            Room room = new Room(RoomType.M);
+            rooms.add(room);
+        }
+        when(roomRepository.saveAll(any())).thenReturn(rooms);
+
+        // when
+        List<Integer> roomIds = roomService.createRooms(createRoomsParam);
+
+        // then
+        Assertions.assertEquals(roomIds.size(), count);
     }
 
     private void setId(Room room, Integer id) throws Exception {
