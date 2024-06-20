@@ -5,14 +5,15 @@
     <img src="https://github.com/f-lab-edu/manitalk/assets/31975535/ea7d496f-eecf-4ee0-9c9f-74a36397cd1e" width="30%" height="30%"/>   
 </p>
 
-<br/>
+<br>
 
 ## 소개
 
 모임의 구성원 모두가 다같이 그룹채팅을 즐기고,   
 1:1 랜덤으로 매칭되는 마니또 채팅을 통해 그 안에서 비밀 친구를 사귈 수 있는 그룹/개별 채팅 서비스 입니다.
 
-<br/>
+<br>
+<br>
 
 ## 핵심 기능
 
@@ -66,25 +67,30 @@
 
 - Google 계정으로 인증 및 로그인을 진행합니다.
 
-<br/>
+<br>
+<br>
 
 ## 시스템 디자인
 
-### Architecture
+### [Architecture]
 
 <img src="https://github.com/f-lab-edu/manitalk/assets/31975535/a7cba500-7d17-4eb8-91e0-d4f3e691ca86" width="100%"/>
 
-<br/>
+<br>
+<br>
+<br>
+<br>
 
-### Database Design
+### [Database Design]
 
-<img src="https://github.com/f-lab-edu/manitalk/assets/31975535/7bd041e6-2b93-430c-99de-efeb582570ce" width="100%"/>
+<img src="https://github.com/f-lab-edu/manitalk/assets/31975535/37419379-a4e4-40e4-bbbd-2a0f87561623" width="100%"/>
 
-<br/>
-<br/>
-<br/>
+<br>
+<br>
+<br>
+<br>
 
 ## 채팅 동작 흐름
 
-<img src="https://github.com/f-lab-edu/manitalk/assets/31975535/7d83c307-a05f-414d-a93b-cebb5a8370ee" width="100%"/>
+<img src="https://github.com/f-lab-edu/manitalk/assets/31975535/c2bb0c4d-f597-4f93-8919-934b567990ed" width="100%"/>
 
