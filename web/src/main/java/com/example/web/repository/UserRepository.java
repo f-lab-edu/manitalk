@@ -1,9 +1,9 @@
 package com.example.web.repository;
 
 import com.example.web.domain.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.web.repository.common.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends BaseRepository<User, Integer> {
 }

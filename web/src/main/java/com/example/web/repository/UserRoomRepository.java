@@ -1,7 +1,7 @@
 package com.example.web.repository;
 
 import com.example.web.domain.UserRoom;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.web.repository.common.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserRoomRepository extends JpaRepository<UserRoom, Integer> {
+public interface UserRoomRepository extends BaseRepository<UserRoom, Integer> {
 
     boolean existsByUserIdAndRoomId(Integer userId, Integer roomId);
 
