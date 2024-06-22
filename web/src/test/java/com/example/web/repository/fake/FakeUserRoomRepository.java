@@ -18,7 +18,7 @@ public class FakeUserRoomRepository implements UserRoomRepository {
     }
 
     @Override
-    public List<Integer> findUserIdByRoomId(Integer roomId) {
+    public List<Integer> findUserIdsByRoomId(Integer roomId) {
         return database.values().stream()
                 .filter(ur -> ur.getRoom().getId().equals(roomId))
                 .map(ur -> ur.getUser().getId())

@@ -66,8 +66,8 @@ public class UserRoomService {
         return userRoomRepository.existsByUserIdAndRoomId(userId, roomId);
     }
 
-    public List<Integer> getRoomMembers(Integer roomId) {
-        return userRoomRepository.findUserIdByRoomId(roomId);
+    public List<Integer> getUserIdsByRoomId(Integer roomId) {
+        return userRoomRepository.findUserIdsByRoomId(roomId);
     }
 
     private UserRoomVo createUserRoomVo(UserRoom userRoom) {

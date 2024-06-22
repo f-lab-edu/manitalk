@@ -14,5 +14,5 @@ public interface UserRoomRepository extends BaseRepository<UserRoom, Integer> {
     boolean existsByUserIdAndRoomId(Integer userId, Integer roomId);
 
     @Query("SELECT ur.user.id FROM UserRoom ur where ur.room.id = :roomId")
-    List<Integer> findUserIdByRoomId(@Param("roomId") Integer roomId);
+    List<Integer> findUserIdsByRoomId(@Param("roomId") Integer roomId);
 }

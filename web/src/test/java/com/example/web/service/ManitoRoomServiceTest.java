@@ -46,7 +46,7 @@ class ManitoRoomServiceTest {
         for (int i = 1; i < memberSize + 1; i++) {
             groupRoomMembers.add(i);
         }
-        when(userRoomService.getRoomMembers(any())).thenReturn(groupRoomMembers);
+        when(userRoomService.getUserIdsByRoomId(any())).thenReturn(groupRoomMembers);
 
         int roomSize = (memberSize / 2) + (memberSize % 2);
         List<Integer> roomIds = new ArrayList<>();

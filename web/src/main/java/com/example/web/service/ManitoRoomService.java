@@ -27,7 +27,7 @@ public class ManitoRoomService {
         }
 
         // 그룹 채팅방의 전체 멤버 ID를 구한다.
-        List<Integer> groupRoomMembers = userRoomService.getRoomMembers(dto.getGroupRoomId());
+        List<Integer> groupRoomMembers = userRoomService.getUserIdsByRoomId(dto.getGroupRoomId());
 
         // 멤버를 랜덤으로 1:1 매칭한다.
         Map<Integer, Integer> pairs = makeMemberPairs(groupRoomMembers);
