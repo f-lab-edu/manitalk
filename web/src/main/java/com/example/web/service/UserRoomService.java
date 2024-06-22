@@ -7,7 +7,6 @@ import com.example.web.dto.CreateUserRoomsParam;
 import com.example.web.repository.UserRoomRepository;
 import com.example.web.vo.UserRoomVo;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.example.web.dto.CreateUserRoomParam;
@@ -23,19 +22,18 @@ public class UserRoomService {
 
     private final UserRoomRepository userRoomRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public UserRoomVo createUserRoom(CreateUserRoomParam param) {
         UserRoom userRoom = makeUserRoom(param.getUserId(), param.getRoomId(), param.getNickname());
-        userRoomRepository.save(userRoom);
+        userRoom = userRoomRepository.save(userRoom);
 
         return createUserRoomVo(userRoom);
     }
 
     public List<Integer> createUserRooms(CreateUserRoomsParam param) {
         List<UserRoom> userRooms = makeUserRoomList(param);
-        userRoomRepository.saveAll(userRooms);
+        userRooms = userRoomRepository.saveAll(userRooms);
 
         return userRooms.stream()
                 .map(UserRoom::getId)

@@ -6,7 +6,6 @@ import com.example.web.domain.Room;
 import com.example.web.dto.CreateManitoRoomDetailsParam;
 import com.example.web.repository.ManitoRoomDetailRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +20,11 @@ public class ManitoRoomDetailService {
 
     private final ManitoRoomDetailRepository manitoRoomDetailRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public List<Integer> createManitoRoomDetails(CreateManitoRoomDetailsParam param) {
         List<ManitoRoomDetail> manitoRoomDetails = makeRoomDetailList(param);
-        manitoRoomDetailRepository.saveAll(manitoRoomDetails);
+        manitoRoomDetails = manitoRoomDetailRepository.saveAll(manitoRoomDetails);
 
         return manitoRoomDetails.stream()
                 .map(ManitoRoomDetail::getId)

@@ -26,7 +26,7 @@ public class RoomService {
 
     public List<Integer> createRooms(CreateRoomsParam param) {
         List<Room> rooms = makeRoomList(param);
-        roomRepository.saveAll(rooms);
+        rooms = roomRepository.saveAll(rooms);
 
         return rooms.stream()
                 .map(Room::getId)
