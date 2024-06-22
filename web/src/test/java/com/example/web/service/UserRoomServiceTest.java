@@ -3,7 +3,7 @@ package com.example.web.service;
 import com.example.web.domain.Room;
 import com.example.web.domain.User;
 import com.example.web.dto.CreateUserRoomsParam;
-import com.example.web.repository.UserRoomRepository;
+import com.example.web.repository.fake.FakeUserRoomRepository;
 import com.example.web.dto.CreateUserRoomParam;
 import com.example.web.vo.UserRoomVo;
 import jakarta.persistence.EntityManager;
@@ -12,11 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,12 +28,8 @@ import static org.mockito.Mockito.when;
 class UserRoomServiceTest {
 
     @Mock
-    private UserRoomRepository userRoomRepository;
-
-    @Mock
     private EntityManager entityManager;
 
-    @InjectMocks
     private UserRoomService userRoomService;
 
     Integer userId = 1;
@@ -51,12 +45,10 @@ class UserRoomServiceTest {
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
+        userRoomService = new UserRoomService(new FakeUserRoomRepository(), entityManager);
 
         user = new User();
-        setUserId(user, userId);
-
         room = new Room();
-        setRoomId(room, roomId);
     }
 
     @Test
@@ -99,21 +91,8 @@ class UserRoomServiceTest {
 
         // when
         List<Integer> userRoomIds = userRoomService.createUserRooms(createUserRoomsParam);
-        System.out.println(userRoomIds);
 
         // then
         Assertions.assertEquals(userRoomIds.size(), count * 2);
-    }
-
-    private void setUserId(User user, Integer id) throws Exception {
-        Field idField = User.class.getDeclaredField("id");
-        idField.setAccessible(true);
-        idField.set(user, id);
-    }
-
-    private void setRoomId(Room room, Integer id) throws Exception {
-        Field idField = Room.class.getDeclaredField("id");
-        idField.setAccessible(true);
-        idField.set(room, id);
     }
 }

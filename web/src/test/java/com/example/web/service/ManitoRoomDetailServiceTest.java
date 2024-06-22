@@ -1,14 +1,13 @@
 package com.example.web.service;
 
 import com.example.web.dto.CreateManitoRoomDetailsParam;
-import com.example.web.repository.ManitoRoomDetailRepository;
+import com.example.web.repository.fake.FakeManitoRoomDetailRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,12 +19,8 @@ import java.util.List;
 class ManitoRoomDetailServiceTest {
 
     @Mock
-    private ManitoRoomDetailRepository manitoRoomDetailRepository;
-
-    @Mock
     private EntityManager entityManager;
 
-    @InjectMocks
     private ManitoRoomDetailService manitoRoomDetailService;
 
     Integer groupRoomId = 1;
@@ -33,6 +28,7 @@ class ManitoRoomDetailServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        manitoRoomDetailService = new ManitoRoomDetailService(new FakeManitoRoomDetailRepository(), entityManager);
     }
 
     @Test
