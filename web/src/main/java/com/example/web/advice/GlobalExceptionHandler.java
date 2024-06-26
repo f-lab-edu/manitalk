@@ -2,6 +2,7 @@ package com.example.web.advice;
 
 import com.example.web.exception.ErrorMsg;
 import com.example.web.exception.room.CanNotEnterRoomException;
+import com.example.web.exception.room.CanNotSendMessageException;
 import com.example.web.exception.room.DuplicatedUserRoomException;
 import com.example.web.exception.room.RoomNotFoundException;
 import com.example.web.exception.user.UserNotFoundException;
@@ -37,8 +38,8 @@ public class GlobalExceptionHandler {
         return createResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(CanNotEnterRoomException.class)
-    public ResponseEntity<ErrorMsg> canNotEnterRoomException(CanNotEnterRoomException e) {
+    @ExceptionHandler({CanNotEnterRoomException.class, CanNotSendMessageException.class})
+    public ResponseEntity<ErrorMsg> canNotEnterRoomException(RuntimeException e) {
         return createResponse(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
