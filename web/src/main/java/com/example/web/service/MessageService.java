@@ -51,7 +51,7 @@ public class MessageService {
                 .build();
     }
 
-    public MessageVo saveMessage(SendMessageRequest dto) {
+    private MessageVo saveMessage(SendMessageRequest dto) {
         Message message = new Message(
                 dto.getRoomId(),
                 dto.getUserId(),
@@ -69,7 +69,7 @@ public class MessageService {
         );
     }
 
-    public void publishMessage(MessageVo messageVo) {
+    private void publishMessage(MessageVo messageVo) {
         try {
             messagePublisher.publish(
                     channelPrefix + "/" + messageVo.getRoomId(),
