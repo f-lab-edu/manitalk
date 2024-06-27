@@ -1,9 +1,9 @@
 package com.example.web.repository;
 
 import com.example.web.domain.GroupRoomDetail;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.web.repository.common.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GroupRoomDetailRepository extends JpaRepository<GroupRoomDetail, Integer> {
+public interface GroupRoomDetailRepository extends BaseRepository<GroupRoomDetail, Integer> {
 }

@@ -5,7 +5,6 @@ import com.example.web.domain.Room;
 import com.example.web.repository.GroupRoomDetailRepository;
 import com.example.web.vo.GroupRoomDetailVo;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.example.web.dto.CreateGroupRoomDetailParam;
@@ -17,8 +16,7 @@ public class GroupRoomDetailService {
 
     private final GroupRoomDetailRepository groupRoomDetailRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public GroupRoomDetailVo createGroupRoomDetail(CreateGroupRoomDetailParam param) {
         Room room = entityManager.getReference(Room.class, param.getRoomId());
@@ -28,7 +26,7 @@ public class GroupRoomDetailService {
         groupRoomDetail.setRoomOwnerId(param.getRoomOwnerId());
         groupRoomDetail.setEnterCode(param.getEnterCode());
 
-        groupRoomDetailRepository.save(groupRoomDetail);
+        groupRoomDetail = groupRoomDetailRepository.save(groupRoomDetail);
 
         return createGroupRoomDetailVo(groupRoomDetail);
     }
