@@ -23,19 +23,19 @@ public class UserRoom {
     @Column(name = "user_room_id")
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonBackReference
     @JsonIgnoreProperties
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     @JsonBackReference
     @JsonIgnoreProperties
     private Room room;
 
-    @Column(nullable = false)
+    @Column
     private String nickname;
 
     @CreatedDate
