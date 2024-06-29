@@ -26,8 +26,8 @@ public class RedisConfig {
     @Value("${spring.data.redis.database}")
     private int redisDatabase;
 
-    @Value("${room.channel.prefix}")
-    String channelPrefix;
+    @Value("${redis.channel.pattern}")
+    String channelPattern;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -61,7 +61,7 @@ public class RedisConfig {
                                                                 MessageListenerAdapter listenerAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
-        container.addMessageListener(listenerAdapter, new PatternTopic(channelPrefix + "/*"));
+        container.addMessageListener(listenerAdapter, new PatternTopic(channelPattern + "*"));
         return container;
     }
 
