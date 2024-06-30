@@ -4,6 +4,7 @@ import com.example.web.domain.Message;
 import com.example.web.dto.SendMessageRequest;
 import com.example.web.dto.SendMessageResponse;
 import com.example.web.exception.room.CanNotSendMessageException;
+import com.example.web.exception.room.FailSendMessageException;
 import com.example.web.exception.room.RoomNotFoundException;
 import com.example.web.exception.user.UserNotFoundException;
 import com.example.web.repository.MessageRepository;
@@ -11,6 +12,7 @@ import com.example.web.vo.MessageVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
+    @Transactional
     public SendMessageResponse sendMessage(SendMessageRequest dto) {
         if (!roomService.isExistsRoom(dto.getRoomId())) {
             throw new RoomNotFoundException("존재하지 않는 채팅방입니다.");
@@ -42,13 +45,19 @@ public class MessageService {
             throw new CanNotSendMessageException("채팅방의 멤버가 아니면 메시지를 전송할 수 없습니다.");
         }
 
-        MessageVo messageVo = saveMessage(dto);
+        try {
+            MessageVo messageVo = saveMessage(dto);
+            publishMessage(messageVo);
 
-        publishMessage(messageVo);
+            return SendMessageResponse.builder()
+                    .messageId(messageVo.getId())
+                    .build();
+        } catch (Exception e) {
+            // TODO: 메시지 전송 실패 로깅 추가
+            System.out.println(e.getMessage());
 
-        return SendMessageResponse.builder()
-                .messageId(messageVo.getId())
-                .build();
+            throw new FailSendMessageException("메시지 전송에 실패하였습니다.", e);
+        }
     }
 
     private MessageVo saveMessage(SendMessageRequest dto) {
@@ -70,14 +79,9 @@ public class MessageService {
     }
 
     private void publishMessage(MessageVo messageVo) {
-        try {
-            messagePublisher.publish(
-                    channelPrefix + "/" + messageVo.getRoomId(),
-                    messageVo
-            );
-        } catch (RuntimeException e) {
-            // TODO: 전송 실패 로깅
-            System.out.println(messageVo.getId() + " : 메시지 전송에 실패하였습니다.");
-        }
+        messagePublisher.publish(
+                channelPrefix + "/" + messageVo.getRoomId(),
+                messageVo
+        );
     }
 }
