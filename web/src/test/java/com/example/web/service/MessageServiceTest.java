@@ -4,6 +4,7 @@ import com.example.web.domain.Message;
 import com.example.web.dto.*;
 import com.example.web.enums.MessageType;
 import com.example.web.exception.room.CanNotSendMessageException;
+import com.example.web.exception.room.FailSendMessageException;
 import com.example.web.exception.room.RoomNotFoundException;
 import com.example.web.exception.user.UserNotFoundException;
 import com.example.web.repository.MessageRepository;
@@ -88,7 +89,7 @@ class MessageServiceTest {
 
     @Test
     @DisplayName("메시지 발신에 실패합니다. - 존재하지 않는 채팅방")
-    void enter_group_room_존재하지_않는_채팅방() {
+    void send_message_존재하지_않는_채팅방() {
 
         //given
         when(roomService.isExistsRoom(any())).thenReturn(false);
@@ -101,7 +102,7 @@ class MessageServiceTest {
 
     @Test
     @DisplayName("메시지 발신에 실패합니다. - 존재하지 않는 사용자")
-    void enter_group_room_존재하지_않는_사용자() {
+    void send_message_존재하지_않는_사용자() {
 
         //given
         when(roomService.isExistsRoom(any())).thenReturn(true);
@@ -115,7 +116,7 @@ class MessageServiceTest {
 
     @Test
     @DisplayName("메시지 발신에 실패합니다. - 채팅방의 멤버가 아님")
-    void enter_group_room_채팅방의_멤버가_아님() {
+    void send_message_채팅방의_멤버가_아님() {
 
         //given
         when(roomService.isExistsRoom(any())).thenReturn(true);
@@ -124,6 +125,22 @@ class MessageServiceTest {
 
         //when & then
         Assertions.assertThrows(CanNotSendMessageException.class, () -> {
+            messageService.sendMessage(sendMessageRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("메시지 발신에 실패합니다. - 메시지 저장 실패")
+    void send_message_메시지_저장_실패() {
+
+        // given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+        when(userService.isExistsUser(any())).thenReturn(true);
+        when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(true);
+        when(messageRepository.save(any())).thenReturn(null);
+
+        //when & then
+        Assertions.assertThrows(FailSendMessageException.class, () -> {
             messageService.sendMessage(sendMessageRequest);
         });
     }

@@ -1,5 +1,6 @@
 package com.example.web.controller;
 
+import com.example.web.config.TestConfig;
 import com.example.web.dto.CreateManitoRoomRequest;
 import com.example.web.dto.CreateManitoRoomResponse;
 import com.example.web.service.ManitoRoomService;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -22,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ManitoRoomController.class)
 @MockBean(JpaMetamodelMappingContext.class)
+@ContextConfiguration(classes = {TestConfig.class})
 class ManitoRoomControllerTest {
 
     @Autowired
