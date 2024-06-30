@@ -1,9 +1,9 @@
 package com.example.web.controller;
 
 import com.example.web.config.TestConfig;
-import com.example.web.dto.CreateManitoRoomRequest;
-import com.example.web.dto.CreateManitoRoomResponse;
-import com.example.web.service.ManitoRoomService;
+import com.example.web.dto.*;
+import com.example.web.enums.MessageType;
+import com.example.web.service.MessageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,10 +22,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = ManitoRoomController.class)
+@WebMvcTest(controllers = MessageController.class)
 @MockBean(JpaMetamodelMappingContext.class)
 @ContextConfiguration(classes = {TestConfig.class})
-class ManitoRoomControllerTest {
+class MessageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,53 +34,50 @@ class ManitoRoomControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private ManitoRoomService manitoRoomService;
+    private MessageService messageService;
 
-    Integer groupRoomId = 1;
-    Long expiresDays = 1L;
+    Integer userId = 1;
+
+    Integer roomId = 1;
+
+    MessageType messageType = MessageType.T;
+
+    String content = "Hi";
 
     @Test
-    @DisplayName("마니또 채팅방을 생성합니다.")
-    void create_manito_room() throws Exception {
+    @DisplayName("메시지를 발신합니다.")
+    void send_message() throws Exception {
 
         // given
-        CreateManitoRoomRequest dto = getCreateManitoRoomsRequest();
-        CreateManitoRoomResponse createManitoRoomResponse = getCreateManitoRoomsResponse();
-        when(manitoRoomService.createManitoRooms(any(CreateManitoRoomRequest.class))).thenReturn(createManitoRoomResponse);
+        SendMessageRequest dto = new SendMessageRequest(roomId, userId, messageType, content);
+
+        SendMessageResponse sendMessageResponse = SendMessageResponse.builder()
+                .messageId("message-1")
+                .build();
+        when(messageService.sendMessage(any(SendMessageRequest.class))).thenReturn(sendMessageResponse);
 
         // when & then
-        mockMvc.perform(post("/manito/room")
+        mockMvc.perform(post("/message")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(createManitoRoomResponse))
+                .andExpect(content().json(objectMapper.writeValueAsString(sendMessageResponse))
         );
     }
 
     @Test
-    @DisplayName("마니또 채팅방을 생성에 실패합니다. : 유효성검사 실패")
-    void create_manito_room_유효성검사_실패() throws Exception {
+    @DisplayName("메시지를 발신합니다. : 유효성검사 실패")
+    void send_message_유효성검사_실패() throws Exception {
+
         // given
-        expiresDays = 8L;
-        CreateManitoRoomRequest dto = getCreateManitoRoomsRequest();
+        content = "";
+        SendMessageRequest dto = new SendMessageRequest(roomId, userId, messageType, content);
 
         // when & then
-        mockMvc.perform(post("/manito/room")
+        mockMvc.perform(post("/message")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-
-    }
-
-    CreateManitoRoomRequest getCreateManitoRoomsRequest() {
-        return new CreateManitoRoomRequest(groupRoomId, expiresDays);
-    }
-
-    CreateManitoRoomResponse getCreateManitoRoomsResponse() {
-        return CreateManitoRoomResponse.builder()
-                .groupRoomId(groupRoomId)
-                .manitoRoomCount(1)
-                .build();
     }
 }
