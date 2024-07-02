@@ -37,11 +37,19 @@ public class GroupRoomDetailService {
                 groupRoomDetail.get().getEnterCode().equals(enterCode);
     }
 
+    public boolean isRoomOwner(Integer roomId, Integer userId) {
+        return groupRoomDetailRepository.existsByIdAndRoomOwnerId(roomId, userId);
+    }
+
     private GroupRoomDetailVo createGroupRoomDetailVo(GroupRoomDetail groupRoomDetail) {
         return new GroupRoomDetailVo(
                 groupRoomDetail.getRoomName(),
                 groupRoomDetail.getRoomOwnerId(),
                 groupRoomDetail.getEnterCode()
         );
+    }
+
+    public void deleteByRoomId(Integer roomId) {
+        groupRoomDetailRepository.deleteById(roomId);
     }
 }

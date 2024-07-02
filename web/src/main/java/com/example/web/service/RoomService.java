@@ -52,4 +52,8 @@ public class RoomService {
     private RoomVo createRoomVo(Room room) {
         return new RoomVo(room.getId(), room.getType());
     }
+
+    public void deleteById(Integer roomId) {
+        roomRepository.deleteById(roomId);
+    }
 }

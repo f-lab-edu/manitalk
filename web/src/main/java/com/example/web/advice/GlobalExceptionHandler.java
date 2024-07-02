@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
         return createResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({CanNotEnterRoomException.class, CanNotSendMessageException.class})
+    @ExceptionHandler({CanNotEnterRoomException.class, CanNotSendMessageException.class, CanNotDeleteRoomException.class})
     public ResponseEntity<ErrorMsg> canNotEnterRoomException(RuntimeException e) {
         return createResponse(e.getMessage(), HttpStatus.FORBIDDEN);
     }
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
         return createResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(FailSendMessageException.class)
+    @ExceptionHandler({FailSendMessageException.class, FailDeleteRoomException.class})
     public ResponseEntity<ErrorMsg> failSendMessageException(RuntimeException e) {
         return createResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -84,4 +84,8 @@ public class MessageService {
                 messageVo
         );
     }
+
+    public void deleteRoomMessages(Integer roomId) {
+        messageRepository.deleteByRoomId(roomId);
+    }
 }
