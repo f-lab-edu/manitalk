@@ -10,7 +10,7 @@ import com.example.web.exception.user.UserNotFoundException;
 import com.example.web.repository.MessageRepository;
 import com.example.web.vo.MessageVo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MessageService {
 
-    @Value("${room.channel.prefix}")
-    String channelPrefix;
-
-    private final MessagePublisher messagePublisher;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     private final RoomService roomService;
 
@@ -31,7 +28,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
-    @Transactional
+    @Transactional(transactionManager = "mongoTransactionManager")
     public SendMessageResponse sendMessage(SendMessageRequest dto) {
         if (!roomService.isExistsRoom(dto.getRoomId())) {
             throw new RoomNotFoundException("존재하지 않는 채팅방입니다.");
@@ -47,15 +44,12 @@ public class MessageService {
 
         try {
             MessageVo messageVo = saveMessage(dto);
-            publishMessage(messageVo);
+            applicationEventPublisher.publishEvent(messageVo);
 
             return SendMessageResponse.builder()
                     .messageId(messageVo.getId())
                     .build();
         } catch (Exception e) {
-            // TODO: 메시지 전송 실패 로깅 추가
-            System.out.println(e.getMessage());
-
             throw new FailSendMessageException("메시지 전송에 실패하였습니다.", e);
         }
     }
@@ -76,16 +70,5 @@ public class MessageService {
                 message.getType(),
                 message.getContent()
         );
-    }
-
-    private void publishMessage(MessageVo messageVo) {
-        messagePublisher.publish(
-                channelPrefix + "/" + messageVo.getRoomId(),
-                messageVo
-        );
-    }
-
-    public void deleteRoomMessages(Integer roomId) {
-        messageRepository.deleteByRoomId(roomId);
     }
 }
