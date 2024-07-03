@@ -53,6 +53,9 @@ public class Room {
     @JsonManagedReference
     private List<UserRoom> userRoom;
 
+    @Setter
+    private boolean deleted = Boolean.FALSE;
+
     public Room(RoomType type) {
         this.type = type;
     }

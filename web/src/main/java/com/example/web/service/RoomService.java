@@ -53,7 +53,12 @@ public class RoomService {
         return new RoomVo(room.getId(), room.getType());
     }
 
-    public void deleteById(Integer roomId) {
-        roomRepository.deleteById(roomId);
+    public void softDeleteById(Integer roomId) {
+        roomRepository.findById(roomId).ifPresent(
+                room -> {
+                    room.setDeleted(true);
+                    roomRepository.save(room);
+                }
+        );
     }
 }
