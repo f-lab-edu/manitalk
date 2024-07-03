@@ -15,9 +15,16 @@
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
+
                 stompClient.subscribe('/room/' + roomId, function (message) {
-                    showMessage(message.body);
+                    var jsonMessage = JSON.parse(message.body);
+                    if (jsonMessage.eventType === 'MESSAGE') {
+                        showMessage(jsonMessage);
+                    } else {
+                        console.log(jsonMessage);
+                    }
                 });
+
                 document.getElementById("connect").style.display = "none";
                 document.getElementById("disconnect").style.display = "block";
             });
@@ -33,8 +40,7 @@
         }
 
         function showMessage(message) {
-            var jsonMessage = JSON.parse(message);
-            var data = jsonMessage.content;
+            var data = message.content;
 
             var response = document.getElementById("response");
             var p = document.createElement("p");
