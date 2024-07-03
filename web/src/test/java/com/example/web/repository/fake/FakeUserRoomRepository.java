@@ -26,6 +26,16 @@ public class FakeUserRoomRepository implements UserRoomRepository {
     }
 
     @Override
+    public void deleteByRoomId(Integer roomId) {
+        List<Integer> idsToRemove = database.entrySet().stream()
+                .filter(ur -> ur.getValue().getRoom().getId().equals(roomId))
+                .map(Map.Entry::getKey)
+                .toList();
+
+        idsToRemove.forEach(database::remove);
+    }
+
+    @Override
     public <S extends UserRoom> S save(S entity) {
         Integer id = entity.getId();
         if (entity.getId() == null) {
