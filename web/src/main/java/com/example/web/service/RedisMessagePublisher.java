@@ -16,7 +16,6 @@ public class RedisMessagePublisher implements MessagePublisher {
 
     @Override
     public void publish(String channel, Object message) {
-        // TODO: 로깅 추가
         System.out.println(channelPattern + channel);
         redisTemplate.convertAndSend(channelPattern + channel, message);
     }
