@@ -6,13 +6,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script>
-        var stompClient = "http://localhost:8080";
+        var stompClient = null;
 
         function connect() {
             var socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
             var roomId = document.getElementById('channel-id').value;
 
-            stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/room/' + roomId, function (message) {
@@ -20,7 +20,44 @@
                 });
                 document.getElementById("connect").style.display = "none";
                 document.getElementById("disconnect").style.display = "block";
+                document.getElementById("message-box").style.display = "block";
             });
+        }
+
+        function sendSocket() {
+            var roomId = document.getElementById('channel-id').value;
+            var userId = 3;
+            var content = document.getElementById('message-1').value;
+            var message = JSON.stringify({'roomId': roomId, 'userId': userId, 'messageType': 'T', 'content': content});
+            console.log(message);
+
+            stompClient.send("/ws/send", {}, message);
+        }
+
+        async function sendApi() {
+            var roomId = document.getElementById('channel-id').value;
+            var userId = 3;
+            var content = document.getElementById('message-2').value;
+            var message = JSON.stringify({'roomId': roomId, 'userId': userId, 'messageType': 'T', 'content': content});
+
+            try {
+                const response = await fetch('http://127.0.0.1:8080/message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: message
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const responseData = await response.json();
+                console.log('Response:', responseData);
+
+            } catch (error) {
+                console.error('Failed to send message:', error);
+            }
         }
 
         function disconnect() {
@@ -30,6 +67,7 @@
             console.log("Disconnected");
             document.getElementById("connect").style.display = "block";
             document.getElementById("disconnect").style.display = "none";
+            document.getElementById("message-box").style.display = "none";
         }
 
         function showMessage(message) {
@@ -47,13 +85,25 @@
 <body>
 <h2>WebSocket Client</h2>
 <div id="connect">
-    <label for="channel-id"></label><input id="channel-id">
+    <label for="channel-id">방번호 : </label><input id="channel-id">
     <button onclick="connect()">Connect</button>
 </div>
 <div id="disconnect" hidden="hidden">
     <button onclick="disconnect()">Disconnect</button>
 </div>
-<h3>~ Messages ~</h3>
-<div id="response"></div>
+<br>
+<br>
+<br>
+<div id="message-box" hidden="hidden">
+    <label for="message-1">socket message 입력 : </label><input id="message-1">
+    <button onclick="sendSocket()">Send</button>
+    <br>
+    <br>
+<!--    <label for="message-2">api message 입력 : </label><input id="message-2">-->
+<!--    <button onclick="sendApi()">Send</button>-->
+
+    <h3>~ Messages ~</h3>
+    <div id="response"></div>
+</div>
 </body>
 </html>
