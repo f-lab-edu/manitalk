@@ -6,13 +6,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script>
-        var stompClient = "http://localhost:8080";
+        var stompClient = null;
+        var url = '/manitalk/ws';
 
         function connect() {
-            var socket = new SockJS('/ws');
+            var socket = new SockJS(url);
+            stompClient = Stomp.over(socket);
             var roomId = document.getElementById('channel-id').value;
 
-            stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/room/' + roomId, function (message) {
@@ -20,7 +21,18 @@
                 });
                 document.getElementById("connect").style.display = "none";
                 document.getElementById("disconnect").style.display = "block";
+                document.getElementById("message-box").style.display = "block";
             });
+        }
+
+        function send() {
+            var roomId = document.getElementById('channel-id').value;
+            var userId = 3;
+            var content = document.getElementById('message-1').value;
+            var message = JSON.stringify({'roomId': roomId, 'userId': userId, 'messageType': 'T', 'content': content});
+            console.log(message);
+
+            stompClient.send(url + "/send", {}, message);
         }
 
         function disconnect() {
@@ -30,6 +42,7 @@
             console.log("Disconnected");
             document.getElementById("connect").style.display = "block";
             document.getElementById("disconnect").style.display = "none";
+            document.getElementById("message-box").style.display = "none";
         }
 
         function showMessage(message) {
@@ -47,13 +60,22 @@
 <body>
 <h2>WebSocket Client</h2>
 <div id="connect">
-    <label for="channel-id"></label><input id="channel-id">
+    <label for="channel-id">방번호 : </label><input id="channel-id">
     <button onclick="connect()">Connect</button>
 </div>
 <div id="disconnect" hidden="hidden">
     <button onclick="disconnect()">Disconnect</button>
 </div>
-<h3>~ Messages ~</h3>
-<div id="response"></div>
+<br>
+<br>
+<br>
+<div id="message-box" hidden="hidden">
+    <label for="message-1">메시지 입력 : </label><input id="message-1">
+    <button onclick="send()">Send</button>
+    <br>
+    <br>
+    <h3>~ Messages ~</h3>
+    <div id="response"></div>
+</div>
 </body>
 </html>
