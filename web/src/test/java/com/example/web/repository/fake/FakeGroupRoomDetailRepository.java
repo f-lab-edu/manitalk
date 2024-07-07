@@ -63,4 +63,10 @@ public class FakeGroupRoomDetailRepository implements GroupRoomDetailRepository 
         return database.values().stream()
                 .anyMatch(ur -> ur.getId().equals(id));
     }
+
+    @Override
+    public boolean existsByIdAndRoomOwnerId(Integer roomId, Integer userId) {
+        return database.values().stream()
+                .anyMatch(ur -> ur.getRoom().getId().equals(roomId) && ur.getRoomOwnerId().equals(userId));
+    }
 }

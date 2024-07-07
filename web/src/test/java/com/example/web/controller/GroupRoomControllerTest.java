@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -151,5 +152,29 @@ class GroupRoomControllerTest {
                 .userRoomId(userRoomId)
                 .nickname(nickname)
                 .build();
+    }
+
+    @Test
+    @DisplayName("그룹 채팅을 종료합니다.")
+    void end_group_room() throws Exception {
+
+        // given
+        EndGroupRoomRequest endGroupRoomRequest = new EndGroupRoomRequest(
+                roomId,
+                roomOwnerId
+        );
+
+        EndRoomResponse endRoomResponse = EndRoomResponse.builder()
+                .roomId(roomId)
+                .build();
+        when(groupRoomService.endGroupRoom(any(EndGroupRoomRequest.class))).thenReturn(endRoomResponse);
+
+        // when & then
+        mockMvc.perform(delete("/group/room")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(endGroupRoomRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(endRoomResponse))
+                );
     }
 }

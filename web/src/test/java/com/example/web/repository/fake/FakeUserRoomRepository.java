@@ -78,4 +78,14 @@ public class FakeUserRoomRepository implements UserRoomRepository {
         return database.values().stream()
                 .anyMatch(ur -> ur.getUser().getId().equals(userId) && ur.getRoom().getId().equals(roomId));
     }
+
+    @Override
+    public void deleteByRoomId(Integer roomId) {
+        List<Integer> idsToRemove = database.entrySet().stream()
+                .filter(ur -> ur.getValue().getRoom().getId().equals(roomId))
+                .map(Map.Entry::getKey)
+                .toList();
+
+        idsToRemove.forEach(database::remove);
+    }
 }
