@@ -1,7 +1,7 @@
 package com.example.websocket.event;
 
 import com.example.websocket.service.MessagePublisher;
-import com.example.websocket.vo.MessageVo;
+import com.example.websocket.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
@@ -15,6 +15,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class PublishEventListener {
 
+    private final MessageService messageService;
+
     private final MessagePublisher messagePublisher;
 
     @Value("${room.channel.prefix}")
@@ -23,18 +25,18 @@ public class PublishEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Retryable(
             backoff = @Backoff(delay = 1000),
-            recover = "saveFailedPublishEvent"
+            recover = "saveFailedEvent"
     )
-    public void handleRoomEndEvent(MessageVo vo) {
+    public void handleRoomEndEvent(MessageEvent messageEvent) {
         messagePublisher.publish(
-                channelPrefix + "/" + vo.getRoomId(),
-                vo
+                channelPrefix + "/" + messageEvent.getMessageVo().getRoomId(),
+                messageEvent.getMessageVo()
         );
     }
 
     @Recover
-    private void saveFailedPublishEvent(MessageVo vo) {
-        // TODO: 최종 실패 시 발신자에게 실패 응답
-        System.out.println(vo.getRoomId() + "fail publish event");
+    private void saveFailedEvent(MessageEvent messageEvent) {
+        // 최종 발신 실패 시 메시지 저장 롤백
+        messageService.deleteMessage(messageEvent.getMessageVo().getId());
     }
 }

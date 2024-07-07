@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class SendMessageRequest {
 
+    private String requestId;
+
     private Integer roomId;
 
     private Integer userId;

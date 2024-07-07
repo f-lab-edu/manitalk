@@ -11,6 +11,8 @@ import lombok.Getter;
 public class MessageVo {
     private String id;
 
+    private String requestId;
+
     private Integer roomId;
 
     private Integer userId;

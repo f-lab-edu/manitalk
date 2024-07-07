@@ -15,6 +15,8 @@ public class Message {
     @Id
     private String id;
 
+    private final String requestId;
+
     private final Integer roomId;
 
     private final Integer userId;
@@ -23,7 +25,8 @@ public class Message {
 
     private final String content;
 
-    public Message(Integer roomId, Integer userId, MessageType type, String content) {
+    public Message(String requestId, Integer roomId, Integer userId, MessageType type, String content) {
+        this.requestId = requestId;
         this.roomId = roomId;
         this.userId = userId;
         this.type = type;

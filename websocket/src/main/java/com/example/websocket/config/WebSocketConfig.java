@@ -18,6 +18,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes(ChatConstant.SOCKET_SERVER_PATH_PREFIX);
+        registry.setApplicationDestinationPrefixes("/app");
     }
 }

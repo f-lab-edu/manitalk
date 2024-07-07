@@ -16,6 +16,8 @@
 
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
+
+                // 채팅방 구독
                 stompClient.subscribe('/room/' + roomId, function (message) {
                     showMessage(message.body);
                 });
@@ -26,13 +28,15 @@
         }
 
         function send() {
+            var requestId = Math.random().toString(36).substr(2, 9);
             var roomId = document.getElementById('channel-id').value;
             var userId = 3;
             var content = document.getElementById('message-1').value;
-            var message = JSON.stringify({'roomId': roomId, 'userId': userId, 'messageType': 'T', 'content': content});
+            var message = JSON.stringify({'requestId': requestId, 'roomId': roomId, 'userId': userId, 'messageType': 'T', 'content': content});
+
             console.log(message);
 
-            stompClient.send(url + "/send", {}, message);
+            stompClient.send("/app/send", {}, message);
         }
 
         function disconnect() {

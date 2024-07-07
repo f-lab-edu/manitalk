@@ -1,6 +1,7 @@
 package com.example.websocket.service;
 
 import com.example.websocket.domain.Message;
+import com.example.websocket.event.MessageEvent;
 import com.example.websocket.repository.MessageRepository;
 import com.example.websocket.vo.MessageVo;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,12 @@ public class MessageService {
     @Transactional
     public void sendMessage(SendMessageRequest dto) {
         MessageVo messageVo = saveMessage(dto);
-        eventPublisher.publishEvent(messageVo);
+        eventPublisher.publishEvent(new MessageEvent(messageVo));
     }
 
     private MessageVo saveMessage(SendMessageRequest dto) {
         Message message = new Message(
+                dto.getRequestId(),
                 dto.getRoomId(),
                 dto.getUserId(),
                 dto.getMessageType(),
@@ -33,10 +35,16 @@ public class MessageService {
 
         return new MessageVo(
                 message.getId(),
+                message.getRequestId(),
                 message.getRoomId(),
                 message.getUserId(),
                 message.getType(),
                 message.getContent()
         );
+    }
+
+    @Transactional
+    public void deleteMessage(String id) {
+        messageRepository.deleteById(id);
     }
 }
