@@ -2,15 +2,15 @@ package com.example.web.service;
 
 import com.example.web.dto.*;
 import com.example.web.enums.RoomType;
-import com.example.web.exception.room.CanNotEnterRoomException;
-import com.example.web.exception.room.DuplicatedUserRoomException;
-import com.example.web.exception.room.RoomNotFoundException;
+import com.example.web.event.EndRoomEvent;
+import com.example.web.exception.room.*;
 import com.example.web.exception.user.UserNotFoundException;
 import com.example.web.dto.CreateRoomParam;
 import com.example.web.vo.GroupRoomDetailVo;
 import com.example.web.vo.RoomVo;
 import com.example.web.vo.UserRoomVo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.web.dto.CreateGroupRoomDetailParam;
@@ -22,8 +22,10 @@ public class GroupRoomService {
 
     private final RoomService roomService;
     private final GroupRoomDetailService groupRoomDetailService;
+    private final ManitoRoomDetailService manitoRoomDetailService;
     private final UserService userService;
     private final UserRoomService userRoomService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public CreateGroupRoomResponse createGroupRoom(CreateGroupRoomRequest dto) {
@@ -82,6 +84,37 @@ public class GroupRoomService {
         return EnterRoomResponse.builder()
                 .userRoomId(userRoomVo.getId())
                 .nickname(userRoomVo.getNickname())
+                .build();
+    }
+
+    @Transactional
+    public EndRoomResponse endGroupRoom(EndGroupRoomRequest dto) {
+
+        if (!roomService.isExistsRoom(dto.getRoomId()) ||
+                !roomService.isGroupRoom(dto.getRoomId())) {
+            throw new RoomNotFoundException("그룹 채팅방이 존재하지 않습니다.");
+        }
+
+        if (!groupRoomDetailService.isRoomOwner(dto.getRoomId(), dto.getRoomOwnerId())) {
+            throw new CanNotDeleteRoomException("그룹 채팅 종료 권한이 없습니다.");
+        }
+
+        if (manitoRoomDetailService.isExistsManitoRoomsInGroup(dto.getRoomId())) {
+            throw new CanNotDeleteRoomException("마니또 채팅이 진행중일 때는 그룹 채팅을 종료할 수 없습니다.");
+        }
+
+        // 채팅방에 속한 유저 데이터를 삭제합니다.
+        userRoomService.deleteByRoomId(dto.getRoomId());
+
+        // 채팅방 데이터를 삭제합니다.
+        groupRoomDetailService.deleteByRoomId(dto.getRoomId());
+        roomService.softDeleteById(dto.getRoomId());
+
+        // 데이터 삭제 성공 시의 종료 이벤트를 발행합니다.
+        applicationEventPublisher.publishEvent(new EndRoomEvent(dto.getRoomId()));
+
+        return EndRoomResponse.builder()
+                .roomId(dto.getRoomId())
                 .build();
     }
 }

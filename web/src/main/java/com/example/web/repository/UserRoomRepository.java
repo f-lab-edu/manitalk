@@ -15,4 +15,6 @@ public interface UserRoomRepository extends BaseRepository<UserRoom, Integer> {
 
     @Query("SELECT ur.user.id FROM UserRoom ur where ur.room.id = :roomId")
     List<Integer> findUserIdsByRoomId(@Param("roomId") Integer roomId);
+
+    void deleteByRoomId(Integer roomId);
 }

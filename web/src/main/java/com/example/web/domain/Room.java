@@ -30,6 +30,9 @@ public class Room {
     @Column(length = 1, nullable = false)
     private RoomType type = RoomType.G;
 
+    @Setter
+    private boolean deleted = Boolean.FALSE;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

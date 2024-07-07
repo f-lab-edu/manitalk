@@ -73,4 +73,8 @@ public class UserRoomService {
     private UserRoomVo createUserRoomVo(UserRoom userRoom) {
         return new UserRoomVo(userRoom.getId(), userRoom.getNickname());
     }
+
+    public void deleteByRoomId(Integer roomId) {
+        userRoomRepository.deleteByRoomId(roomId);
+    }
 }

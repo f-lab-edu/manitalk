@@ -1,11 +1,10 @@
 package com.example.web.advice;
 
 import com.example.web.exception.ErrorMsg;
-import com.example.web.exception.room.CanNotEnterRoomException;
-import com.example.web.exception.room.DuplicatedRoomException;
-import com.example.web.exception.room.DuplicatedUserRoomException;
-import com.example.web.exception.room.RoomNotFoundException;
+import com.example.web.exception.room.*;
 import com.example.web.exception.user.UserNotFoundException;
+import jakarta.transaction.TransactionalException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -38,13 +37,19 @@ public class GlobalExceptionHandler {
         return createResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(CanNotEnterRoomException.class)
-    public ResponseEntity<ErrorMsg> canNotEnterRoomException(CanNotEnterRoomException e) {
+    @ExceptionHandler({CanNotEnterRoomException.class, CanNotDeleteRoomException.class})
+    public ResponseEntity<ErrorMsg> canNotEnterRoomException(RuntimeException e) {
         return createResponse(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({DuplicatedUserRoomException.class, DuplicatedRoomException.class})
     public ResponseEntity<ErrorMsg> duplicatedUserRoomException(RuntimeException e) {
         return createResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({TransactionalException.class, DataIntegrityViolationException.class})
+    public ResponseEntity<ErrorMsg> failTransactionalException(RuntimeException e) {
+        // TODO: 로깅 추가
+        return createResponse("데이터 처리에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
