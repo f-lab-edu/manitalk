@@ -1,4 +1,4 @@
-package com.example.web.repository.common;
+package com.example.web.repository.jpa.common;
 
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;

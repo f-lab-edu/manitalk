@@ -2,8 +2,11 @@ package com.example.web.service;
 
 import com.example.web.dto.*;
 import com.example.web.enums.RoomType;
+import com.example.web.event.EnterRoomEvent;
+import com.example.web.exception.room.CanNotEnterRoomException;
 import com.example.web.exception.room.DuplicatedRoomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +19,7 @@ public class ManitoRoomService {
     private final RoomService roomService;
     private final ManitoRoomDetailService manitoRoomDetailService;
     private final UserRoomService userRoomService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public CreateManitoRoomResponse createManitoRooms(CreateManitoRoomRequest dto) {
@@ -79,5 +83,30 @@ public class ManitoRoomService {
         }
 
         return pairs;
+    }
+
+    @Transactional
+    public EnterManitoRoomResponse enterManitoRoom(EnterManitoRoomRequest dto) {
+
+        if (!userRoomService.isExistsUserRoom(dto.getUserId(), dto.getRoomId())) {
+            throw new CanNotEnterRoomException("채팅방의 멤버가 아닙니다.");
+        }
+
+        Integer userRoomId = userRoomService.getUserRoomId(dto.getUserId(), dto.getRoomId());
+
+        // 닉네임을 설정합니다.
+        userRoomService.setNicknameByUserRoomId(userRoomId, dto.getNickname());
+
+        // TODO: 마니또 채팅시에 진행할 미션을 할당합니다.
+
+        // 입장 이벤트를 발행합니다.
+        applicationEventPublisher.publishEvent(new EnterRoomEvent(dto.getRoomId(), dto.getUserId(), dto.getNickname()));
+
+        return EnterManitoRoomResponse.builder()
+                .userRoomId(userRoomId)
+                .missionId(1)
+                .missionKeyword("mission")
+                .build();
+
     }
 }

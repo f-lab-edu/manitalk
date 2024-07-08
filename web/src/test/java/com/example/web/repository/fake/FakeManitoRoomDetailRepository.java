@@ -1,7 +1,7 @@
 package com.example.web.repository.fake;
 
 import com.example.web.domain.ManitoRoomDetail;
-import com.example.web.repository.ManitoRoomDetailRepository;
+import com.example.web.repository.jpa.ManitoRoomDetailRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;

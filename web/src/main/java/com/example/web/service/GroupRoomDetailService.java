@@ -2,7 +2,7 @@ package com.example.web.service;
 
 import com.example.web.domain.GroupRoomDetail;
 import com.example.web.domain.Room;
-import com.example.web.repository.GroupRoomDetailRepository;
+import com.example.web.repository.jpa.GroupRoomDetailRepository;
 import com.example.web.vo.GroupRoomDetailVo;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;

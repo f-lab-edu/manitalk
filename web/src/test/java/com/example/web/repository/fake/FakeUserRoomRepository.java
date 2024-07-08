@@ -1,7 +1,7 @@
 package com.example.web.repository.fake;
 
 import com.example.web.domain.UserRoom;
-import com.example.web.repository.UserRoomRepository;
+import com.example.web.repository.jpa.UserRoomRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -99,5 +99,10 @@ public class FakeUserRoomRepository implements UserRoomRepository {
         return database.values().stream()
                 .filter(ur -> !ur.isDeleted() && ur.getRoom().getId().equals(roomId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<UserRoom> findByUserIdAndRoomId(Integer userId, Integer roomId) {
+        return Optional.empty();
     }
 }

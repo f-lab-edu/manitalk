@@ -1,6 +1,6 @@
 package com.example.web.service;
 
-import com.example.web.repository.UserRepository;
+import com.example.web.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

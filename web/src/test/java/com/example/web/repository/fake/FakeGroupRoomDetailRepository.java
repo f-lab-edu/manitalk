@@ -1,7 +1,7 @@
 package com.example.web.repository.fake;
 
 import com.example.web.domain.GroupRoomDetail;
-import com.example.web.repository.GroupRoomDetailRepository;
+import com.example.web.repository.jpa.GroupRoomDetailRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;

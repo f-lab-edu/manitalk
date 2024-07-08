@@ -2,7 +2,7 @@ package com.example.web.repository.fake;
 
 import com.example.web.domain.Room;
 import com.example.web.enums.RoomType;
-import com.example.web.repository.RoomRepository;
+import com.example.web.repository.jpa.RoomRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
