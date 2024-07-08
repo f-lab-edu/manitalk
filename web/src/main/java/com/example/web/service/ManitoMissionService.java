@@ -8,15 +8,21 @@ import com.example.web.vo.MissionVo;
 import com.example.web.vo.UserMissionVo;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class ManitoMissionService {
 
+    @Value("${mission.cache.name}")
+    private String missionCacheName;
+
     private final UserRoomMissionRepository userRoomMissionRepository;
 
     private final MissionService missionService;
+
+    private final CacheService cacheService;
 
     private final EntityManager entityManager;
 
@@ -29,12 +35,21 @@ public class ManitoMissionService {
         UserRoomMission userRoomMission = new UserRoomMission(userRoom, mission);
         userRoomMissionRepository.save(userRoomMission);
 
-        // TODO: 미션 데이터 캐싱
+        saveUserMissionCache(userRoomId, mission.getKeyword());
 
         return new UserMissionVo(
                 userRoomId,
                 mission.getId(),
                 mission.getKeyword()
         );
+    }
+
+    private void saveUserMissionCache(Integer userRoomId, String keyword) {
+        try {
+            cacheService.putCache(missionCacheName, userRoomId.toString(), keyword);
+        } catch (RuntimeException e) {
+            // TODO: 로깅 추가
+            System.out.println(e.getMessage());
+        }
     }
 }
