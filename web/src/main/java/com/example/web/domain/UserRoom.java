@@ -39,6 +39,7 @@ public class UserRoom {
     private Room room;
 
     @Column
+    @Setter
     private String nickname;
 
     @Setter

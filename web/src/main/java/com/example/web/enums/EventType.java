@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum EventType {
-    END_ROOM("채팅 종료");
+    END_ROOM("채팅 종료"),
+    ENTER_ROOM("채팅 입장");
 
     private final String description;
 }

@@ -4,7 +4,7 @@ import com.example.web.domain.Room;
 import com.example.web.domain.User;
 import com.example.web.domain.UserRoom;
 import com.example.web.dto.CreateUserRoomsParam;
-import com.example.web.repository.UserRoomRepository;
+import com.example.web.repository.jpa.UserRoomRepository;
 import com.example.web.vo.UserRoomVo;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,7 @@ import com.example.web.dto.CreateUserRoomParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -81,5 +82,16 @@ public class UserRoomService {
                     userRoomRepository.save(userRoom);
                 }
         );
+    }
+
+    public Integer getUserRoomId(Integer userId, Integer roomId) {
+        Optional<UserRoom> userRoom = userRoomRepository.findByUserIdAndRoomId(userId, roomId);
+        return userRoom.map(UserRoom::getId).orElse(null);
+    }
+
+    public void setNicknameByUserRoomId(Integer userRoomId, String nickname) {
+        UserRoom userRoom = entityManager.getReference(UserRoom.class, userRoomId);
+        userRoom.setNickname(nickname);
+        userRoomRepository.save(userRoom);
     }
 }

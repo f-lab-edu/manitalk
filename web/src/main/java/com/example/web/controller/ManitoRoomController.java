@@ -22,4 +22,9 @@ public class ManitoRoomController {
     public ResponseEntity<CreateManitoRoomResponse> createManitoRooms(@Valid @RequestBody CreateManitoRoomRequest dto) {
         return new ResponseEntity<>(manitoRoomService.createManitoRooms(dto), HttpStatus.OK);
     }
+
+    @PostMapping("/enter")
+    public ResponseEntity<EnterManitoRoomResponse> enterManitoRoom(@Valid @RequestBody EnterManitoRoomRequest dto) {
+        return new ResponseEntity<>(manitoRoomService.enterManitoRoom(dto), HttpStatus.OK);
+    }
 }
