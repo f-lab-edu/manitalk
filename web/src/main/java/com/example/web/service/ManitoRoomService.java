@@ -5,6 +5,7 @@ import com.example.web.enums.RoomType;
 import com.example.web.event.EnterRoomEvent;
 import com.example.web.exception.room.CanNotEnterRoomException;
 import com.example.web.exception.room.DuplicatedRoomException;
+import com.example.web.vo.UserMissionVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class ManitoRoomService {
     private final RoomService roomService;
     private final ManitoRoomDetailService manitoRoomDetailService;
     private final UserRoomService userRoomService;
+    private final ManitoMissionService manitoMissionService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
@@ -97,15 +99,16 @@ public class ManitoRoomService {
         // 닉네임을 설정합니다.
         userRoomService.setNicknameByUserRoomId(userRoomId, dto.getNickname());
 
-        // TODO: 마니또 채팅시에 진행할 미션을 할당합니다.
+        // 마니또 채팅시에 진행할 미션을 할당합니다.
+        UserMissionVo userMissionVo = manitoMissionService.saveUserRoomMission(userRoomId);
 
         // 입장 이벤트를 발행합니다.
         applicationEventPublisher.publishEvent(new EnterRoomEvent(dto.getRoomId(), dto.getUserId(), dto.getNickname()));
 
         return EnterManitoRoomResponse.builder()
                 .userRoomId(userRoomId)
-                .missionId(1)
-                .missionKeyword("mission")
+                .missionId(userMissionVo.getMissionId())
+                .missionKeyword(userMissionVo.getKeyword())
                 .build();
 
     }
