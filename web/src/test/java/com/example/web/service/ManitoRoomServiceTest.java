@@ -1,7 +1,9 @@
 package com.example.web.service;
 
 import com.example.web.dto.*;
+import com.example.web.exception.room.CanNotEnterRoomException;
 import com.example.web.exception.room.DuplicatedRoomException;
+import com.example.web.vo.UserMissionVo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +31,23 @@ class ManitoRoomServiceTest {
     @Mock
     private UserRoomService userRoomService;
 
+    @Mock
+    private ManitoMissionService manitoMissionService;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
     @InjectMocks
     private ManitoRoomService manitoRoomService;
 
     Integer groupRoomId = 1;
     Long expiresDays = 1L;
+    Integer userId = 1;
+    Integer roomId = 1;
+    String nickname = "test";
+    Integer userRoomId = 1;
+    Integer missionId = 1;
+    String missionKeyword = "최고";
 
     @Test
     @DisplayName("새로운 마니또 채팅방들을 생성합니다.")
@@ -81,5 +96,44 @@ class ManitoRoomServiceTest {
                 groupRoomId,
                 expiresDays
         );
+    }
+
+    @Test
+    @DisplayName("마니또 채팅방에 입장합니다.")
+    void enter_manito_room() {
+
+        // given
+        when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(true);
+        when(userRoomService.getUserRoomId(any(), any())).thenReturn(userRoomId);
+
+        UserMissionVo userMissionVo = new UserMissionVo(
+                userRoomId, missionId, missionKeyword
+        );
+        when(manitoMissionService.saveUserRoomMission(any())).thenReturn(userMissionVo);
+
+        // when
+        EnterManitoRoomResponse enterManitoRoomResponse = manitoRoomService.enterManitoRoom(getEnterManitoRoomsRequest());
+
+        // then
+        Assertions.assertEquals(enterManitoRoomResponse.getUserRoomId(), userRoomId);
+        Assertions.assertEquals(enterManitoRoomResponse.getMissionId(), missionId);
+        Assertions.assertEquals(enterManitoRoomResponse.getMissionKeyword(), missionKeyword);
+    }
+
+    @Test
+    @DisplayName("마니또 채팅방 입장에 실패합니다. - 채팅방의 멤버가 아님")
+    void enter_manito_room_채팅방의_멤버가_아님() {
+
+        //given
+        when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(false);
+
+        //when & then
+        Assertions.assertThrows(CanNotEnterRoomException.class, () -> {
+            manitoRoomService.enterManitoRoom(getEnterManitoRoomsRequest());
+        });
+    }
+
+    EnterManitoRoomRequest getEnterManitoRoomsRequest() {
+        return new EnterManitoRoomRequest(userId,roomId,nickname);
     }
 }

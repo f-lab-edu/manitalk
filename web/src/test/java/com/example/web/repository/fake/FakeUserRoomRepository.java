@@ -103,6 +103,8 @@ public class FakeUserRoomRepository implements UserRoomRepository {
 
     @Override
     public Optional<UserRoom> findByUserIdAndRoomId(Integer userId, Integer roomId) {
-        return Optional.empty();
+        return database.values().stream()
+                .filter(ur -> ur.getUser().getId().equals(userId) && ur.getRoom().getId().equals(roomId))
+                .findFirst();
     }
 }
