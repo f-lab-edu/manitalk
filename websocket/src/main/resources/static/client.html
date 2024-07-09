@@ -30,7 +30,7 @@
         function send() {
             var requestId = Math.random().toString(36).substr(2, 9);
             var roomId = document.getElementById('channel-id').value;
-            var userId = 3;
+            var userId = document.getElementById('user-id').value;
             var content = document.getElementById('message-1').value;
             var message = JSON.stringify({'requestId': requestId, 'roomId': roomId, 'userId': userId, 'messageType': 'T', 'content': content});
 
@@ -64,7 +64,8 @@
 <body>
 <h2>WebSocket Client</h2>
 <div id="connect">
-    <label for="channel-id">방번호 : </label><input id="channel-id">
+    <label for="channel-id">채팅방 ID : </label><input id="channel-id">
+    <label for="user-id">사용자 ID : </label><input id="user-id">
     <button onclick="connect()">Connect</button>
 </div>
 <div id="disconnect" hidden="hidden">
