@@ -1,6 +1,6 @@
 package com.example.websocket.config;
 
-import com.example.websocket.constant.WebSocketConstant;
+import com.example.websocket.constant.ChatConstant;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -13,11 +13,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").withSockJS();
+        registry.addEndpoint(ChatConstant.SOCKET_SERVER_PATH_PREFIX).withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/" + WebSocketConstant.ROOM_PREFIX);
+        registry.setApplicationDestinationPrefixes("/app");
     }
 }
