@@ -49,7 +49,12 @@ public class GroupRoomDetailService {
         return groupRoomDetailRepository.existsByIdAndRoomOwnerId(roomId, userId);
     }
 
-    public void deleteByRoomId(Integer roomId) {
-        groupRoomDetailRepository.deleteById(roomId);
+    public void softDeleteByRoomId(Integer roomId) {
+        groupRoomDetailRepository.findById(roomId).ifPresent(
+                groupRoomDetail -> {
+                    groupRoomDetail.setDeleted(true);
+                    groupRoomDetailRepository.save(groupRoomDetail);
+                }
+        );
     }
 }

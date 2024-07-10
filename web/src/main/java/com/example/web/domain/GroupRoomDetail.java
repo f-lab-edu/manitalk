@@ -52,6 +52,9 @@ public class GroupRoomDetail {
     @Column(nullable = false)
     private String enterCode;
 
+    @Setter
+    private boolean deleted = Boolean.FALSE;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -17,4 +17,6 @@ public interface UserRoomRepository extends BaseRepository<UserRoom, Integer> {
     List<Integer> findUserIdsByRoomId(@Param("roomId") Integer roomId);
 
     void deleteByRoomId(Integer roomId);
+
+    List<UserRoom> findByRoomId(Integer roomId);
 }

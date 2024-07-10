@@ -88,4 +88,11 @@ public class FakeUserRoomRepository implements UserRoomRepository {
 
         idsToRemove.forEach(database::remove);
     }
+
+    @Override
+    public List<UserRoom> findByRoomId(Integer roomId) {
+        return database.values().stream()
+                .filter(ur -> ur.getRoom().getId().equals(roomId))
+                .collect(Collectors.toList());
+    }
 }

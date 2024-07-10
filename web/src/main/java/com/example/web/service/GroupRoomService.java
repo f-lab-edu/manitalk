@@ -104,10 +104,10 @@ public class GroupRoomService {
         }
 
         // 채팅방에 속한 유저 데이터를 삭제합니다.
-        userRoomService.deleteByRoomId(dto.getRoomId());
+        userRoomService.softDeleteByRoomId(dto.getRoomId());
 
         // 채팅방 데이터를 삭제합니다.
-        groupRoomDetailService.deleteByRoomId(dto.getRoomId());
+        groupRoomDetailService.softDeleteByRoomId(dto.getRoomId());
         roomService.softDeleteById(dto.getRoomId());
 
         // 데이터 삭제 성공 시의 종료 이벤트를 발행합니다.

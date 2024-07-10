@@ -74,7 +74,12 @@ public class UserRoomService {
         return new UserRoomVo(userRoom.getId(), userRoom.getNickname());
     }
 
-    public void deleteByRoomId(Integer roomId) {
-        userRoomRepository.deleteByRoomId(roomId);
+    public void softDeleteByRoomId(Integer roomId) {
+        userRoomRepository.findByRoomId(roomId).forEach(
+                userRoom -> {
+                    userRoom.setDeleted(true);
+                    userRoomRepository.save(userRoom);
+                }
+        );
     }
 }
