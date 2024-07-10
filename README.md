@@ -10,7 +10,7 @@
 ## 소개
 
 모임의 구성원 모두가 다같이 그룹채팅을 즐기고,   
-1:1 랜덤으로 매칭되는 마니또 채팅을 통해 그 안에서 비밀 친구를 사귈 수 있는 그룹/개별 채팅 서비스 입니다.
+1:1 랜덤으로 매칭되는 마니또 채팅을 통해 그 안에서 비밀 친구를 사귈 수 있는 그룹/개별 채팅 서비스
 
 <br>
 <br>
@@ -30,10 +30,13 @@
     - 입장시에 닉네임을 설정한다.
         - 한번 설정한 닉네임은 변경이 불가하고, 기존 멤버들의 닉네임과 중복이 불가하다.
 
+- 그룹 채팅 나가기
+    - 마니또 채팅이 진행중이면 그룹채팅을 나갈 수 없다.
+    - 방장이 그룹채팅을 나가면 남은 멤버 중의 한 사람이 방장이 된다. (랜덤)  
 
 - 그룹 채팅 종료
     - 방장이 그룹 채팅을 종료한다.
-    - 모든 멤버들이 채팅방에서 나가기 되고, 채팅방과 이력 모두 삭제된다.
+    - 모든 멤버들이 채팅방에서 나가기 처리된다.
 
 
     
@@ -58,39 +61,29 @@
         - 미션 키워드는 ‘고마워’, ‘최고야‘ 등의 칭찬의 말들로 구성한다.
         - 마니또 채팅 기간동안 미션 키워드를 더 많이 들은 사람은 우수 마니또가 된다.
 
+- 마니또 채팅 나가기
+    - 마니또 채팅은 나가기가 불가능하다.
 
 - 마니또 채팅 종료
-    - 마니또 채팅 기간이 지나면 채팅방에서 나가기 되고, 채팅방과 이력 모두 삭제된다.
+    - 마니또 채팅 기간이 지나면 채팅방에서 자동으로 나가기 처리된다. (배치)
     - 미션의 우수 마니또에게는 뱃지가 수여되며, 그룹 채팅방에서 자신의 닉네임 옆에 뱃지와 개수가 표시된다.
 
 ### 회원가입 & 로그인
 
-- Google 계정으로 인증 및 로그인을 진행합니다.
+- Google 계정으로 인증 및 로그인을 진행한다.
 
 <br>
 <br>
 
-## 시스템 디자인
-
-### [Architecture]
-
-<img src="https://github.com/f-lab-edu/manitalk/assets/31975535/a7cba500-7d17-4eb8-91e0-d4f3e691ca86" width="100%"/>
+## System Design: 시스템 디자인
+- [설계](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-%EC%84%A4%EA%B3%84)
+- [Database: ERD](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-Database-(ERD))
 
 <br>
-<br>
-<br>
-<br>
 
-### [Database Design]
+## Sequence Diagram: 시퀀스 다이어그램
+- [그룹 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EA%B7%B8%EB%A3%B9-%EC%B1%84%ED%8C%85)
+- [마니또 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A7%88%EB%8B%88%EB%98%90-%EC%B1%84%ED%8C%85)
+- [메시지 수발신](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A9%94%EC%8B%9C%EC%A7%80-%EC%88%98%EB%B0%9C%EC%8B%A0)
 
-<img src="https://github.com/f-lab-edu/manitalk/assets/31975535/37419379-a4e4-40e4-bbbd-2a0f87561623" width="100%"/>
-
-<br>
-<br>
-<br>
-<br>
-
-## 채팅 동작 흐름
-
-<img src="https://github.com/f-lab-edu/manitalk/assets/31975535/c2bb0c4d-f597-4f93-8919-934b567990ed" width="100%"/>
 
