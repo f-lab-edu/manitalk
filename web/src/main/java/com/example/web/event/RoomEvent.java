@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public abstract class RoomEvent {
+public class RoomEvent {
     protected EventType eventType;
     protected Integer roomId;
 }
