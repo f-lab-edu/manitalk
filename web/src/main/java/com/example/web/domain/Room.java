@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,6 +21,7 @@ import java.util.List;
 @Table(name = "rooms")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
+@SQLRestriction("deleted = false")
 public class Room {
 
     @Id

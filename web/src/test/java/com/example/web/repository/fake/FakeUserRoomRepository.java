@@ -14,13 +14,14 @@ public class FakeUserRoomRepository implements UserRoomRepository {
 
     @Override
     public Optional<UserRoom> findById(Integer id) {
-        return Optional.ofNullable(database.get(id));
+        UserRoom entity = database.get(id);
+        return (entity != null && !entity.isDeleted()) ? Optional.of(entity) : Optional.empty();
     }
 
     @Override
     public List<Integer> findUserIdsByRoomId(Integer roomId) {
         return database.values().stream()
-                .filter(ur -> ur.getRoom().getId().equals(roomId))
+                .filter(ur -> !ur.isDeleted() && ur.getRoom().getId().equals(roomId))
                 .map(ur -> ur.getUser().getId())
                 .collect(Collectors.toList());
     }
@@ -47,12 +48,18 @@ public class FakeUserRoomRepository implements UserRoomRepository {
 
     @Override
     public void deleteById(Integer id) {
-        database.remove(id);
+        UserRoom entity = database.get(id);
+        if (entity != null && !entity.isDeleted()) {
+            entity.setDeleted(true);
+        }
     }
 
     @Override
     public void delete(UserRoom entity) {
-        database.remove(entity.getId());
+        UserRoom existingEntity = database.get(entity.getId());
+        if (existingEntity != null && !existingEntity.isDeleted()) {
+            existingEntity.setDeleted(true);
+        }
     }
 
     @Override
@@ -64,35 +71,33 @@ public class FakeUserRoomRepository implements UserRoomRepository {
 
     @Override
     public UserRoom getReferenceById(Integer id) {
-        return database.get(id);
+        UserRoom entity = database.get(id);
+        return (entity != null && !entity.isDeleted()) ? entity : null;
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return database.values().stream()
-                .anyMatch(ur -> ur.getId().equals(id));
+        UserRoom entity = database.get(id);
+        return entity != null && !entity.isDeleted();
     }
 
     @Override
     public boolean existsByUserIdAndRoomId(Integer userId, Integer roomId) {
         return database.values().stream()
-                .anyMatch(ur -> ur.getUser().getId().equals(userId) && ur.getRoom().getId().equals(roomId));
+                .anyMatch(ur -> !ur.isDeleted() && ur.getUser().getId().equals(userId) && ur.getRoom().getId().equals(roomId));
     }
 
     @Override
     public void deleteByRoomId(Integer roomId) {
-        List<Integer> idsToRemove = database.entrySet().stream()
-                .filter(ur -> ur.getValue().getRoom().getId().equals(roomId))
-                .map(Map.Entry::getKey)
-                .toList();
-
-        idsToRemove.forEach(database::remove);
+        database.values().stream()
+                .filter(ur -> ur.getRoom().getId().equals(roomId) && !ur.isDeleted())
+                .forEach(ur -> ur.setDeleted(true));
     }
 
     @Override
     public List<UserRoom> findByRoomId(Integer roomId) {
         return database.values().stream()
-                .filter(ur -> ur.getRoom().getId().equals(roomId))
+                .filter(ur -> !ur.isDeleted() && ur.getRoom().getId().equals(roomId))
                 .collect(Collectors.toList());
     }
 }
