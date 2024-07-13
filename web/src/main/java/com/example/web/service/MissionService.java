@@ -4,8 +4,7 @@ import com.example.web.domain.Mission;
 import com.example.web.repository.jpa.MissionRepository;
 import com.example.web.vo.MissionVo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,12 +13,13 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
 
-    public MissionVo getMission() {
-        Long count = missionRepository.count();
-        int random = (int)(Math.random() * count);
+    @Cacheable(cacheNames = "meta", key = "'missionCount'")
+    public Integer getMissionCount() {
+        return missionRepository.count();
+    }
 
-        Page<Mission> missionPage = missionRepository.findAll(PageRequest.of(random, 1));
-        Mission mission = missionPage.getContent().getFirst();
+    public MissionVo getMission(int offset) {
+        Mission mission = missionRepository.getRandomMission(offset);
         return new MissionVo(
                 mission.getId(),
                 mission.getKeyword()

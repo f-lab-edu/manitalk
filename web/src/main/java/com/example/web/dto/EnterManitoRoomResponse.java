@@ -7,6 +7,4 @@ import lombok.Getter;
 @Builder
 public class EnterManitoRoomResponse {
     private Integer userRoomId;
-    private Integer missionId;
-    private String missionKeyword;
 }

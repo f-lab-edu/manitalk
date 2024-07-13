@@ -1,15 +1,15 @@
 package com.example.web.service;
 
-import com.example.web.domain.Mission;
-import com.example.web.domain.UserRoom;
-import com.example.web.domain.UserRoomMission;
+import com.example.web.domain.*;
 import com.example.web.repository.jpa.UserRoomMissionRepository;
 import com.example.web.vo.MissionVo;
-import com.example.web.vo.UserMissionVo;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,22 +26,30 @@ public class ManitoMissionService {
 
     private final EntityManager entityManager;
 
-    public UserMissionVo saveUserRoomMission(Integer userRoomId) {
-        MissionVo missionVo = missionService.getMission();
+    public void createUserRoomMissions(List<Integer> userRoomIds) {
+        List<UserRoomMission> userRoomMissions = makeUserRoomMissionList(userRoomIds);
+        userRoomMissionRepository.saveAll(userRoomMissions);
+    }
 
-        UserRoom userRoom = entityManager.getReference(UserRoom.class, userRoomId);
-        Mission mission = entityManager.getReference(Mission.class, missionVo.getMissionId());
+    private List<UserRoomMission> makeUserRoomMissionList(List<Integer> userRoomIds) {
+        List<UserRoomMission> userRoomMissions = new ArrayList<>();
+        Integer missionCount = missionService.getMissionCount();
 
-        UserRoomMission userRoomMission = new UserRoomMission(userRoom, mission);
-        userRoomMissionRepository.save(userRoomMission);
+        userRoomIds.forEach(userRoomId -> {
+            // 지정할 미션을 조회한다.
+            int offset = (int)(Math.random() * missionCount);
+            MissionVo missionVo = missionService.getMission(offset);
 
-        saveUserMissionCache(userRoomId, mission.getKeyword());
+            // 유저-미션 데이터를 생성하여 리스트에 저장한다.
+            Mission mission = entityManager.getReference(Mission.class, missionVo.getMissionId());
+            UserRoom userRoom = entityManager.getReference(UserRoom.class, userRoomId);
+            userRoomMissions.add(new UserRoomMission(userRoom, mission));
 
-        return new UserMissionVo(
-                userRoomId,
-                mission.getId(),
-                mission.getKeyword()
-        );
+            // 미션을 캐시로 저장한다.
+            saveUserMissionCache(userRoomId, missionVo.getKeyword());
+        });
+
+        return userRoomMissions;
     }
 
     private void saveUserMissionCache(Integer userRoomId, String keyword) {

@@ -44,8 +44,6 @@ class ManitoRoomControllerTest {
     Integer roomId = 1;
     String nickname = "test";
     Integer userRoomId = 1;
-    Integer missionId = 1;
-    String missionKeyword = "최고";
 
     @Test
     @DisplayName("마니또 채팅방을 생성합니다.")
@@ -100,8 +98,6 @@ class ManitoRoomControllerTest {
         EnterManitoRoomRequest dto = new EnterManitoRoomRequest(userId,roomId,nickname);
         EnterManitoRoomResponse enterManitoRoomResponse = EnterManitoRoomResponse.builder()
                 .userRoomId(userRoomId)
-                .missionId(missionId)
-                .missionKeyword(missionKeyword)
                 .build();
         when(manitoRoomService.enterManitoRoom(any(EnterManitoRoomRequest.class))).thenReturn(enterManitoRoomResponse);
 

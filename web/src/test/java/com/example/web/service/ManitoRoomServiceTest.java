@@ -3,7 +3,6 @@ package com.example.web.service;
 import com.example.web.dto.*;
 import com.example.web.exception.room.CanNotEnterRoomException;
 import com.example.web.exception.room.DuplicatedRoomException;
-import com.example.web.vo.UserMissionVo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,8 +45,6 @@ class ManitoRoomServiceTest {
     Integer roomId = 1;
     String nickname = "test";
     Integer userRoomId = 1;
-    Integer missionId = 1;
-    String missionKeyword = "최고";
 
     @Test
     @DisplayName("새로운 마니또 채팅방들을 생성합니다.")
@@ -69,6 +66,12 @@ class ManitoRoomServiceTest {
             roomIds.add(i);
         }
         when(roomService.createRooms(any())).thenReturn(roomIds);
+
+        List<Integer> userRoomIds = new ArrayList<>();
+        for (int i = 1; i < roomSize*2 + 1; i++) {
+            userRoomIds.add(i);
+        }
+        when(userRoomService.createUserRooms(any())).thenReturn(userRoomIds);
 
         // when
         CreateManitoRoomResponse createManitoRoomResponse = manitoRoomService.createManitoRooms(getCreateManitoRoomsRequest());
@@ -106,18 +109,11 @@ class ManitoRoomServiceTest {
         when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(true);
         when(userRoomService.getUserRoomId(any(), any())).thenReturn(userRoomId);
 
-        UserMissionVo userMissionVo = new UserMissionVo(
-                userRoomId, missionId, missionKeyword
-        );
-        when(manitoMissionService.saveUserRoomMission(any())).thenReturn(userMissionVo);
-
         // when
         EnterManitoRoomResponse enterManitoRoomResponse = manitoRoomService.enterManitoRoom(getEnterManitoRoomsRequest());
 
         // then
         Assertions.assertEquals(enterManitoRoomResponse.getUserRoomId(), userRoomId);
-        Assertions.assertEquals(enterManitoRoomResponse.getMissionId(), missionId);
-        Assertions.assertEquals(enterManitoRoomResponse.getMissionKeyword(), missionKeyword);
     }
 
     @Test
