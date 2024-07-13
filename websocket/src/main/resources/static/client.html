@@ -2,9 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WebSocket Client</title>
+    <title>Manitalk</title>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .hidden {
+            display: none;
+        }
+        .message-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .channel-messages {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
     <script>
         var stompClient = null;
         var url = '/manitalk/ws';
@@ -12,31 +30,71 @@
         function connect() {
             var socket = new SockJS(url);
             stompClient = Stomp.over(socket);
-            var roomId = document.getElementById('channel-id').value;
 
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
 
-                // 채팅방 구독
-                stompClient.subscribe('/room/' + roomId, function (message) {
-                    showMessage(message.body);
-                });
-                document.getElementById("connect").style.display = "none";
-                document.getElementById("disconnect").style.display = "block";
-                document.getElementById("message-box").style.display = "block";
+                document.getElementById("connect").classList.add("hidden");
+                document.getElementById("subscribe").classList.remove("hidden");
+                document.getElementById("disconnect").classList.remove("hidden");
+                document.getElementById("chatBox").classList.remove("hidden");
+                document.getElementById('user-id').value = '';
             });
         }
 
-        function send() {
-            var requestId = Math.random().toString(36).substr(2, 9);
+        function subscribe() {
             var roomId = document.getElementById('channel-id').value;
+            if (!document.getElementById("channel-" + roomId)) {
+                var channelDiv = document.createElement("div");
+                channelDiv.id = "channel-" + roomId;
+                channelDiv.classList.add("message-container");
+
+                var channelHeader = document.createElement("h4");
+                channelHeader.innerText = "채팅방 ID: " + roomId;
+                channelDiv.appendChild(channelHeader);
+
+                var channelMessages = document.createElement("div");
+                channelMessages.classList.add("channel-messages");
+                channelDiv.appendChild(channelMessages);
+
+                var messageInput = document.createElement("input");
+                messageInput.id = "message-" + roomId;
+                messageInput.placeholder = "메시지 입력";
+                channelDiv.appendChild(messageInput);
+
+                var sendButton = document.createElement("button");
+                sendButton.innerText = "Send";
+                sendButton.onclick = function () {
+                    send(roomId);
+                };
+                channelDiv.appendChild(sendButton);
+
+                document.getElementById("chatBox").appendChild(channelDiv);
+            }
+
+            stompClient.subscribe('/room/' + roomId, function (message) {
+                showMessage(roomId, message.body);
+            });
+
+            document.getElementById('channel-id').value = '';
+        }
+
+        function send(roomId) {
+            var requestId = Math.random().toString(36).substr(2, 9);
             var userId = document.getElementById('user-id').value;
-            var content = document.getElementById('message-1').value;
-            var message = JSON.stringify({'requestId': requestId, 'roomId': roomId, 'userId': userId, 'messageType': 'T', 'content': content});
+            var content = document.getElementById('message-' + roomId).value;
+            var message = JSON.stringify({
+                'requestId': requestId,
+                'roomId': roomId,
+                'userId': userId,
+                'messageType': 'T',
+                'content': content
+            });
 
             console.log(message);
 
             stompClient.send("/app/send", {}, message);
+            document.getElementById('message-' + roomId).value = '';
         }
 
         function disconnect() {
@@ -44,43 +102,46 @@
                 stompClient.disconnect();
             }
             console.log("Disconnected");
-            document.getElementById("connect").style.display = "block";
-            document.getElementById("disconnect").style.display = "none";
-            document.getElementById("message-box").style.display = "none";
+            document.getElementById("connect").classList.remove("hidden");
+            document.getElementById("subscribe").classList.add("hidden");
+            document.getElementById("disconnect").classList.add("hidden");
+
+            document.getElementById("chatBox").classList.add("hidden");
+            var responseDiv = document.getElementById("chatBox");
+            while (responseDiv.firstChild) {
+                responseDiv.removeChild(responseDiv.firstChild);
+            }
         }
 
-        function showMessage(message) {
+        function showMessage(roomId, message) {
             var jsonMessage = JSON.parse(message);
             var data = jsonMessage.content;
 
-            var response = document.getElementById("response");
+            var channelMessages = document.querySelector("#channel-" + roomId + " .channel-messages");
             var p = document.createElement("p");
             p.style.wordWrap = "break-word";
             p.appendChild(document.createTextNode(data));
-            response.appendChild(p);
+            channelMessages.appendChild(p);
         }
     </script>
 </head>
 <body>
-<h2>WebSocket Client</h2>
+<h2>* Manitalk *</h2>
 <div id="connect">
-    <label for="channel-id">채팅방 ID : </label><input id="channel-id">
-    <label for="user-id">사용자 ID : </label><input id="user-id">
+    <label for="user-id">사용자 ID: </label><input id="user-id">
     <button onclick="connect()">Connect</button>
 </div>
-<div id="disconnect" hidden="hidden">
+<div id="disconnect" class="hidden">
     <button onclick="disconnect()">Disconnect</button>
 </div>
 <br>
 <br>
-<br>
-<div id="message-box" hidden="hidden">
-    <label for="message-1">메시지 입력 : </label><input id="message-1">
-    <button onclick="send()">Send</button>
-    <br>
-    <br>
-    <h3>~ Messages ~</h3>
-    <div id="response"></div>
+<div id="subscribe" class="hidden">
+    <label for="channel-id">채팅방 ID: </label><input id="channel-id">
+    <button onclick="subscribe()">Subscribe</button>
 </div>
+<br>
+<br>
+<div id="chatBox"></div>
 </body>
 </html>
