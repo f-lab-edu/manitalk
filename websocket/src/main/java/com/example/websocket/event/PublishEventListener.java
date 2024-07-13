@@ -20,7 +20,7 @@ public class PublishEventListener {
     private final MessagePublisher messagePublisher;
 
     @Value("${room.channel.prefix}")
-    String channelPrefix;
+    String roomChannelPrefix;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Retryable(
@@ -29,7 +29,7 @@ public class PublishEventListener {
     )
     public void handleRoomEndEvent(MessageEvent messageEvent) {
         messagePublisher.publish(
-                channelPrefix + "/" + messageEvent.getMessageVo().getRoomId(),
+                roomChannelPrefix + messageEvent.getMessageVo().getRoomId(),
                 messageEvent.getMessageVo()
         );
     }
