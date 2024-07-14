@@ -44,4 +44,17 @@ public class GroupRoomDetailService {
                 groupRoomDetail.getEnterCode()
         );
     }
+
+    public boolean isRoomOwner(Integer roomId, Integer userId) {
+        return groupRoomDetailRepository.existsByIdAndRoomOwnerId(roomId, userId);
+    }
+
+    public void softDeleteByRoomId(Integer roomId) {
+        groupRoomDetailRepository.findById(roomId).ifPresent(
+                groupRoomDetail -> {
+                    groupRoomDetail.setDeleted(true);
+                    groupRoomDetailRepository.save(groupRoomDetail);
+                }
+        );
+    }
 }

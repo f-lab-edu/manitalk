@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GroupRoomDetailRepository extends BaseRepository<GroupRoomDetail, Integer> {
+    boolean existsByIdAndRoomOwnerId(Integer roomId, Integer userId);
 }

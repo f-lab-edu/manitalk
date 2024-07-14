@@ -13,7 +13,8 @@ public class FakeGroupRoomDetailRepository implements GroupRoomDetailRepository 
 
     @Override
     public Optional<GroupRoomDetail> findById(Integer id) {
-        return Optional.ofNullable(database.get(id));
+        GroupRoomDetail entity = database.get(id);
+        return (entity != null && !entity.isDeleted()) ? Optional.of(entity) : Optional.empty();
     }
 
     @Override
@@ -38,12 +39,18 @@ public class FakeGroupRoomDetailRepository implements GroupRoomDetailRepository 
 
     @Override
     public void deleteById(Integer id) {
-        database.remove(id);
+        GroupRoomDetail entity = database.get(id);
+        if (entity != null && !entity.isDeleted()) {
+            entity.setDeleted(true);
+        }
     }
 
     @Override
     public void delete(GroupRoomDetail entity) {
-        database.remove(entity.getId());
+        GroupRoomDetail existingEntity = database.get(entity.getId());
+        if (existingEntity != null && !existingEntity.isDeleted()) {
+            existingEntity.setDeleted(true);
+        }
     }
 
     @Override
@@ -55,12 +62,19 @@ public class FakeGroupRoomDetailRepository implements GroupRoomDetailRepository 
 
     @Override
     public GroupRoomDetail getReferenceById(Integer id) {
-        return database.get(id);
+        GroupRoomDetail entity = database.get(id);
+        return (entity != null && !entity.isDeleted()) ? entity : null;
     }
 
     @Override
     public boolean existsById(Integer id) {
+        GroupRoomDetail entity = database.get(id);
+        return entity != null && !entity.isDeleted();
+    }
+
+    @Override
+    public boolean existsByIdAndRoomOwnerId(Integer roomId, Integer userId) {
         return database.values().stream()
-                .anyMatch(ur -> ur.getId().equals(id));
+                .anyMatch(grd -> !grd.isDeleted() && grd.getRoom().getId().equals(roomId) && grd.getRoomOwnerId().equals(userId));
     }
 }

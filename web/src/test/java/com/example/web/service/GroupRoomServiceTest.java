@@ -4,6 +4,7 @@ import com.example.web.dto.*;
 import com.example.web.enums.RoomType;
 import com.example.web.dto.CreateRoomParam;
 import com.example.web.dto.CreateUserRoomParam;
+import com.example.web.exception.room.CanNotDeleteRoomException;
 import com.example.web.exception.room.CanNotEnterRoomException;
 import com.example.web.exception.room.DuplicatedUserRoomException;
 import com.example.web.exception.room.RoomNotFoundException;
@@ -20,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.web.dto.CreateGroupRoomDetailParam;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -38,6 +40,12 @@ class GroupRoomServiceTest {
 
     @Mock
     private UserRoomService userRoomService;
+
+    @Mock
+    private ManitoRoomDetailService manitoRoomDetailService;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @InjectMocks
     private GroupRoomService groupRoomService;
@@ -188,5 +196,73 @@ class GroupRoomServiceTest {
         Assertions.assertThrows(DuplicatedUserRoomException.class, () -> {
             groupRoomService.enterGroupRoom(enterGroupRoomRequest);
         });
+    }
+
+    @Test
+    @DisplayName("그룹 채팅을 종료합니다.")
+    void end_group_room() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+        when(roomService.isGroupRoom(any())).thenReturn(true);
+        when(groupRoomDetailService.isRoomOwner(any(), any())).thenReturn(true);
+        when(manitoRoomDetailService.isExistsManitoRoomsInGroup(any())).thenReturn(false);
+
+        //when
+        EndRoomResponse endRoomResponse = groupRoomService.endGroupRoom(createEndGroupRoomRequest());
+
+        //then
+        Assertions.assertEquals(endRoomResponse.getRoomId(), roomId);
+    }
+
+    @Test
+    @DisplayName("그룹 채팅을 종료에 실패합니다_채팅방이 존재하지 않음")
+    void end_group_room_채팅방이_존재하지_않음() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+
+        //when & then
+        Assertions.assertThrows(RoomNotFoundException.class, () -> {
+            groupRoomService.endGroupRoom(createEndGroupRoomRequest());
+        });
+    }
+
+    @Test
+    @DisplayName("그룹 채팅을 종료에 실패합니다_종료 권한이 없음")
+    void end_group_room_종료_권한이_없음() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+        when(roomService.isGroupRoom(any())).thenReturn(true);
+        when(groupRoomDetailService.isRoomOwner(any(), any())).thenReturn(false);
+
+        //when & then
+        Assertions.assertThrows(CanNotDeleteRoomException.class, () -> {
+            groupRoomService.endGroupRoom(createEndGroupRoomRequest());
+        });
+    }
+
+    @Test
+    @DisplayName("그룹 채팅을 종료에 실패합니다_마니또 채팅 진행중")
+    void end_group_room_마니또_채팅_진행중() {
+
+        //given
+        when(roomService.isExistsRoom(any())).thenReturn(true);
+        when(roomService.isGroupRoom(any())).thenReturn(true);
+        when(groupRoomDetailService.isRoomOwner(any(), any())).thenReturn(true);
+        when(manitoRoomDetailService.isExistsManitoRoomsInGroup(any())).thenReturn(true);
+
+        //when & then
+        Assertions.assertThrows(CanNotDeleteRoomException.class, () -> {
+            groupRoomService.endGroupRoom(createEndGroupRoomRequest());
+        });
+    }
+
+    private EndGroupRoomRequest createEndGroupRoomRequest() {
+        return new EndGroupRoomRequest(
+                roomId,
+                roomOwnerId
+        );
     }
 }

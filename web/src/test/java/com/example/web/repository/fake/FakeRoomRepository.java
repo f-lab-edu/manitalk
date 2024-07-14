@@ -14,7 +14,8 @@ public class FakeRoomRepository implements RoomRepository {
 
     @Override
     public Optional<Room> findById(Integer id) {
-        return Optional.ofNullable(database.get(id));
+        Room entity = database.get(id);
+        return (entity != null && !entity.isDeleted()) ? Optional.of(entity) : Optional.empty();
     }
 
     @Override
@@ -39,12 +40,18 @@ public class FakeRoomRepository implements RoomRepository {
 
     @Override
     public void deleteById(Integer id) {
-        database.remove(id);
+        Room entity = database.get(id);
+        if (entity != null && !entity.isDeleted()) {
+            entity.setDeleted(true);
+        }
     }
 
     @Override
     public void delete(Room entity) {
-        database.remove(entity.getId());
+        Room existingEntity = database.get(entity.getId());
+        if (existingEntity != null && !existingEntity.isDeleted()) {
+            existingEntity.setDeleted(true);
+        }
     }
 
     @Override
@@ -56,18 +63,19 @@ public class FakeRoomRepository implements RoomRepository {
 
     @Override
     public Room getReferenceById(Integer id) {
-        return database.get(id);
+        Room entity = database.get(id);
+        return (entity != null && !entity.isDeleted()) ? entity : null;
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return database.values().stream()
-                .anyMatch(ur -> ur.getId().equals(id));
+        Room entity = database.get(id);
+        return entity != null && !entity.isDeleted();
     }
 
     @Override
     public boolean existsByIdAndType(Integer id, RoomType type) {
         return database.values().stream()
-                .anyMatch(r -> r.getId().equals(id) && r.getType().equals(type));
+                .anyMatch(r -> !r.isDeleted() && r.getId().equals(id) && r.getType().equals(type));
     }
 }

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,6 +22,7 @@ import java.util.List;
 @Table(name = "group_room_details")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("deleted = false")
 public class GroupRoomDetail {
 
     @Id
@@ -51,6 +53,9 @@ public class GroupRoomDetail {
     @Setter
     @Column(nullable = false)
     private String enterCode;
+
+    @Setter
+    private boolean deleted = Boolean.FALSE;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
