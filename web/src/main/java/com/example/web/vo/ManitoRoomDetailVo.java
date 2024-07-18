@@ -7,9 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode
-public class UserRoomVo {
-    private Integer id;
-    private Integer userId;
+public class ManitoRoomDetailVo {
     private Integer roomId;
-    private String nickname;
+    private Integer groupRoomId;
 }
