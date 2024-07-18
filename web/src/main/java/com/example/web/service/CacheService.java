@@ -17,4 +17,15 @@ public class CacheService {
             cache.put(key, value);
         }
     }
+
+    public Object getCache(String cacheName, String key) {
+        Cache cache = cacheManager.getCache(cacheName);
+        if (cache != null) {
+            Cache.ValueWrapper valueWrapper = cache.get(key);
+            if (valueWrapper != null) {
+                return valueWrapper.get();
+            }
+        }
+        return null;
+    }
 }
