@@ -113,7 +113,7 @@ class GroupRoomServiceTest {
         when(userService.isExistsUser(any())).thenReturn(true);
         when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(false);
 
-        UserRoomVo userRoomVo = new UserRoomVo(userRoomId, nickname);
+        UserRoomVo userRoomVo = new UserRoomVo(userRoomId, userId, roomId, nickname);
         when(userRoomService.createUserRoom(any(CreateUserRoomParam.class))).thenReturn(userRoomVo);
 
         //when

@@ -88,13 +88,6 @@ public class FakeUserRoomRepository implements UserRoomRepository {
     }
 
     @Override
-    public void deleteByRoomId(Integer roomId) {
-        database.values().stream()
-                .filter(ur -> ur.getRoom().getId().equals(roomId) && !ur.isDeleted())
-                .forEach(ur -> ur.setDeleted(true));
-    }
-
-    @Override
     public List<UserRoom> findByRoomId(Integer roomId) {
         return database.values().stream()
                 .filter(ur -> !ur.isDeleted() && ur.getRoom().getId().equals(roomId))
@@ -102,9 +95,16 @@ public class FakeUserRoomRepository implements UserRoomRepository {
     }
 
     @Override
-    public Optional<UserRoom> findByUserIdAndRoomId(Integer userId, Integer roomId) {
-        return database.values().stream()
+    public Integer findIdByUserIdAndRoomId(Integer userId, Integer roomId) {
+        return Objects.requireNonNull(database.values().stream()
                 .filter(ur -> ur.getUser().getId().equals(userId) && ur.getRoom().getId().equals(roomId))
-                .findFirst();
+                .findFirst().orElse(null)).getId();
+    }
+
+    @Override
+    public List<UserRoom> findAllByRoomIdIn(List<Integer> roomIds) {
+        return database.values().stream()
+                .filter(ur -> !ur.isDeleted() && roomIds.contains(ur.getRoom().getId()))
+                .collect(Collectors.toList());
     }
 }
