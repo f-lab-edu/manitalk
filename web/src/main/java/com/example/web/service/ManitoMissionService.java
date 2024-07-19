@@ -6,6 +6,7 @@ import com.example.web.vo.MissionVo;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -57,12 +58,8 @@ public class ManitoMissionService {
         }
     }
 
+    @Cacheable(cacheNames = "mission", key = "#userRoomId")
     public String getMissionKeyword(Integer userRoomId) {
-        String mission = String.valueOf(cacheService.getCache(missionCacheName, userRoomId.toString()));
-
-        if (mission == null) {
-            mission = Objects.requireNonNull(userRoomMissionRepository.findById(userRoomId).orElse(null)).getMission().getKeyword();
-        }
-        return mission;
+        return Objects.requireNonNull(userRoomMissionRepository.findById(userRoomId).orElse(null)).getMission().getKeyword();
     }
 }
