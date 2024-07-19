@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface MissionRepository extends BaseRepository<Mission, Integer> {
     Integer count();
 
-    @Query("SELECT m FROM Mission m ORDER BY m.id LIMIT 1 OFFSET :offset")
-    Mission getRandomMission(@Param("offset") int offset);
+    @Query("SELECT m FROM Mission m WHERE m.id >= :range ORDER BY m.id limit 1")
+    Mission getRandomMission(@Param("range") int range);
 }

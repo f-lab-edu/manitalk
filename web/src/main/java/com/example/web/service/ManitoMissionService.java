@@ -37,8 +37,8 @@ public class ManitoMissionService {
 
         userRoomIds.forEach(userRoomId -> {
             // 지정할 미션을 조회한다.
-            int offset = (int)(Math.random() * missionCount);
-            MissionVo missionVo = missionService.getMission(offset);
+            int range = (int)(Math.random() * missionCount);
+            MissionVo missionVo = missionService.getMission(range);
 
             // 유저-미션 데이터를 생성하여 리스트에 저장한다.
             Mission mission = entityManager.getReference(Mission.class, missionVo.getMissionId());
