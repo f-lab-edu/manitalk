@@ -60,9 +60,8 @@ public class ManitoRoomDetailService {
     }
 
     public void softDeleteAllByIds(List<Integer> ids) {
-        List<ManitoRoomDetail> manitoRoomDetails = manitoRoomDetailRepository.findAllByIdIn(ids).stream()
-                .peek(manitoRoomDetail -> manitoRoomDetail.setDeleted(true))
-                .collect(Collectors.toList());
+        List<ManitoRoomDetail> manitoRoomDetails = manitoRoomDetailRepository.findAllByIdIn(ids);
+        manitoRoomDetails.forEach(manitoRoomDetail -> manitoRoomDetail.setDeleted(true));
         manitoRoomDetailRepository.saveAll(manitoRoomDetails);
     }
 }

@@ -80,9 +80,8 @@ public class UserRoomService {
     }
 
     public void softDeleteAllByRoomIds(List<Integer> roomIds) {
-        List<UserRoom> userRooms = userRoomRepository.findAllByRoomIdIn(roomIds).stream()
-                .peek(manitoRoomDetail -> manitoRoomDetail.setDeleted(true))
-                .collect(Collectors.toList());
+        List<UserRoom> userRooms = userRoomRepository.findAllByRoomIdIn(roomIds);
+        userRooms.forEach(manitoRoomDetail -> manitoRoomDetail.setDeleted(true));
         userRoomRepository.saveAll(userRooms);
     }
 
