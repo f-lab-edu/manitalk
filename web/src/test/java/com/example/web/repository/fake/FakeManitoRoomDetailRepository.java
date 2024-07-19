@@ -74,9 +74,9 @@ public class FakeManitoRoomDetailRepository implements ManitoRoomDetailRepositor
     }
 
     @Override
-    public List<ManitoRoomDetailVo> getExpiredManitoRoom(LocalDateTime now) {
+    public List<ManitoRoomDetailVo> findExpiredManitoRooms(LocalDateTime start, LocalDateTime end) {
         return database.values().stream()
-                .filter(mrd -> mrd.getExpiresAt().isBefore(now))
+                .filter(mrd -> mrd.getExpiresAt().isAfter(start) && mrd.getExpiresAt().isBefore(end))
                 .map(mrd -> new ManitoRoomDetailVo(mrd.getId(), mrd.getGroupRoomDetail().getId()))
                 .collect(Collectors.toList());
     }

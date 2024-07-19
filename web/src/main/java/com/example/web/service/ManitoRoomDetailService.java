@@ -50,7 +50,7 @@ public class ManitoRoomDetailService {
     }
 
     public Map<Integer, List<Integer>> getExpiredManitoRooms() {
-        List<ManitoRoomDetailVo> manitoRoomDetails = manitoRoomDetailRepository.getExpiredManitoRoom(LocalDateTime.now());
+        List<ManitoRoomDetailVo> manitoRoomDetails = manitoRoomDetailRepository.findExpiredManitoRooms(LocalDateTime.now().minusDays(1), LocalDateTime.now());
 
         return manitoRoomDetails.stream()
                 .collect(Collectors.groupingBy(
