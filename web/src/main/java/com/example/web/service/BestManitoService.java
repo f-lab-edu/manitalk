@@ -46,23 +46,21 @@ public class BestManitoService {
 
     public List<BestManitoVo> getBestManitoVos(List<UserRoomVo> userRoomList) {
         List<BestManitoVo> bestManitoVos = new ArrayList<>();
-        AtomicReference<Integer> maxCount = new AtomicReference<>(0);
+        int maxCount = 0;
 
-        userRoomList.forEach(
-                userRoomVo -> {
-                    String mission = manitoMissionService.getMissionKeyword(userRoomVo.getId());
-                    Integer count = messageService.aggregateMissionCount(userRoomVo.getRoomId(), userRoomVo.getUserId(), mission);
+        for (UserRoomVo userRoomVo : userRoomList) {
+            String mission = manitoMissionService.getMissionKeyword(userRoomVo.getId());
+            Integer count = messageService.aggregateMissionCount(userRoomVo.getRoomId(), userRoomVo.getUserId(), mission);
 
-                    if (count >= maxCount.get()) {
-                        if (count > maxCount.get()) {
-                            bestManitoVos.clear();
-                            maxCount.set(count);
-                        }
-                        bestManitoVos.add(new BestManitoVo(userRoomVo.getId(), userRoomVo.getNickname()));
-                    }
-                });
+            if (count > maxCount) {
+                bestManitoVos.clear();
+                maxCount = count;
+            }
+            if (count >= maxCount) {
+                bestManitoVos.add(new BestManitoVo(userRoomVo.getId(), userRoomVo.getNickname()));
+            }
+        }
 
-        maxCount.set(0);
         return bestManitoVos;
     }
 
