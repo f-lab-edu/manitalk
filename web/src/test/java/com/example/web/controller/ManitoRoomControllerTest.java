@@ -3,6 +3,8 @@ package com.example.web.controller;
 import com.example.web.config.TestConfig;
 import com.example.web.dto.CreateManitoRoomRequest;
 import com.example.web.dto.CreateManitoRoomResponse;
+import com.example.web.dto.EnterManitoRoomRequest;
+import com.example.web.dto.EnterManitoRoomResponse;
 import com.example.web.service.ManitoRoomService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +40,10 @@ class ManitoRoomControllerTest {
 
     Integer groupRoomId = 1;
     Long expiresDays = 1L;
+    Integer userId = 1;
+    Integer roomId = 1;
+    String nickname = "test";
+    Integer userRoomId = 1;
 
     @Test
     @DisplayName("마니또 채팅방을 생성합니다.")
@@ -82,5 +88,41 @@ class ManitoRoomControllerTest {
                 .groupRoomId(groupRoomId)
                 .manitoRoomCount(1)
                 .build();
+    }
+
+    @Test
+    @DisplayName("마니또 채팅방에 입장합니다.")
+    void enter_manito_room() throws Exception {
+
+        // given
+        EnterManitoRoomRequest dto = new EnterManitoRoomRequest(userId,roomId,nickname);
+        EnterManitoRoomResponse enterManitoRoomResponse = EnterManitoRoomResponse.builder()
+                .userRoomId(userRoomId)
+                .build();
+        when(manitoRoomService.enterManitoRoom(any(EnterManitoRoomRequest.class))).thenReturn(enterManitoRoomResponse);
+
+        // when & then
+        mockMvc.perform(post("/manito/room/enter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(enterManitoRoomResponse))
+                );
+    }
+
+    @Test
+    @DisplayName("마니또 채팅방 입장에 실패합니다. : 유효성검사 실패")
+    void enter_manito_room_유효성검사_실패() throws Exception {
+        // given
+        nickname = "";
+        EnterManitoRoomRequest dto = new EnterManitoRoomRequest(userId,roomId,nickname);
+
+        // when & then
+        mockMvc.perform(post("/manito/room")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
     }
 }

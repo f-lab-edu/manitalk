@@ -1,12 +1,13 @@
-package com.example.web.repository;
+package com.example.web.repository.jpa;
 
 import com.example.web.domain.UserRoom;
-import com.example.web.repository.common.BaseRepository;
+import com.example.web.repository.jpa.common.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRoomRepository extends BaseRepository<UserRoom, Integer> {
@@ -19,4 +20,6 @@ public interface UserRoomRepository extends BaseRepository<UserRoom, Integer> {
     void deleteByRoomId(Integer roomId);
 
     List<UserRoom> findByRoomId(Integer roomId);
+
+    Optional<UserRoom> findByUserIdAndRoomId(Integer userId, Integer roomId);
 }

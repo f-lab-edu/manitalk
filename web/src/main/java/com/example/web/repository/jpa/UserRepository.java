@@ -1,7 +1,7 @@
-package com.example.web.repository;
+package com.example.web.repository.jpa;
 
 import com.example.web.domain.User;
-import com.example.web.repository.common.BaseRepository;
+import com.example.web.repository.jpa.common.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

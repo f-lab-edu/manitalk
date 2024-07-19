@@ -6,44 +6,35 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "user_rooms")
+@Table(name = "user_room_missions")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@SQLRestriction("deleted = false")
-public class UserRoom {
+public class UserRoomMission {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_room_id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "user_room_id")
     @JsonBackReference
     @JsonIgnoreProperties
-    private User user;
+    private UserRoom userRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "mission_id")
     @JsonBackReference
     @JsonIgnoreProperties
-    private Room room;
-
-    @Column
-    @Setter
-    private String nickname;
-
-    @Setter
-    private boolean deleted = Boolean.FALSE;
+    private Mission mission;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -52,9 +43,8 @@ public class UserRoom {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public UserRoom(User user, Room room, String nickname) {
-        this.user = user;
-        this.room = room;
-        this.nickname = nickname;
+    public UserRoomMission(UserRoom userRoom, Mission mission) {
+        this.userRoom = userRoom;
+        this.mission = mission;
     }
 }

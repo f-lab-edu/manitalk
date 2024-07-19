@@ -3,7 +3,7 @@ package com.example.web.service;
 import com.example.web.domain.Room;
 import com.example.web.dto.CreateRoomsParam;
 import com.example.web.enums.RoomType;
-import com.example.web.repository.RoomRepository;
+import com.example.web.repository.jpa.RoomRepository;
 import com.example.web.dto.CreateRoomParam;
 import com.example.web.vo.RoomVo;
 import lombok.RequiredArgsConstructor;

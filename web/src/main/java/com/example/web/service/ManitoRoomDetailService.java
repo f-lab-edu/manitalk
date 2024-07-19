@@ -4,7 +4,7 @@ import com.example.web.domain.GroupRoomDetail;
 import com.example.web.domain.ManitoRoomDetail;
 import com.example.web.domain.Room;
 import com.example.web.dto.CreateManitoRoomDetailsParam;
-import com.example.web.repository.ManitoRoomDetailRepository;
+import com.example.web.repository.jpa.ManitoRoomDetailRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

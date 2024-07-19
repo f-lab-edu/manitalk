@@ -1,7 +1,7 @@
 package com.example.web.repository.fake;
 
 import com.example.web.domain.User;
-import com.example.web.repository.UserRepository;
+import com.example.web.repository.jpa.UserRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;

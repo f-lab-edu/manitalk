@@ -1,23 +1,23 @@
 package com.example.web.repository.fake;
 
-import com.example.web.domain.ManitoRoomDetail;
-import com.example.web.repository.jpa.ManitoRoomDetailRepository;
+import com.example.web.domain.UserRoomMission;
+import com.example.web.repository.jpa.UserRoomMissionRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class FakeManitoRoomDetailRepository implements ManitoRoomDetailRepository {
+public class FakeUserRoomMissionRepository implements UserRoomMissionRepository {
 
-    private final Map<Integer, ManitoRoomDetail> database = new HashMap<>();
+    private final Map<Integer, UserRoomMission> database = new HashMap<>();
     private final AtomicInteger idGenerator = new AtomicInteger();
 
     @Override
-    public Optional<ManitoRoomDetail> findById(Integer id) {
+    public Optional<UserRoomMission> findById(Integer id) {
         return Optional.ofNullable(database.get(id));
     }
 
     @Override
-    public <S extends ManitoRoomDetail> S save(S entity) {
+    public <S extends UserRoomMission> S save(S entity) {
         Integer id = entity.getId();
         if (entity.getId() == null) {
             id = idGenerator.incrementAndGet();
@@ -27,7 +27,7 @@ public class FakeManitoRoomDetailRepository implements ManitoRoomDetailRepositor
     }
 
     @Override
-    public <S extends ManitoRoomDetail> List<S> saveAll(Iterable<S> entities) {
+    public <S extends UserRoomMission> List<S> saveAll(Iterable<S> entities) {
         List<S> result = new ArrayList<>();
         for (S entity : entities) {
             save(entity);
@@ -42,19 +42,19 @@ public class FakeManitoRoomDetailRepository implements ManitoRoomDetailRepositor
     }
 
     @Override
-    public void delete(ManitoRoomDetail entity) {
+    public void delete(UserRoomMission entity) {
         database.remove(entity.getId());
     }
 
     @Override
-    public void deleteAll(Iterable<? extends ManitoRoomDetail> entities) {
-        for (ManitoRoomDetail entity : entities) {
+    public void deleteAll(Iterable<? extends UserRoomMission> entities) {
+        for (UserRoomMission entity : entities) {
             delete(entity);
         }
     }
 
     @Override
-    public ManitoRoomDetail getReferenceById(Integer id) {
+    public UserRoomMission getReferenceById(Integer id) {
         return database.get(id);
     }
 
@@ -62,11 +62,5 @@ public class FakeManitoRoomDetailRepository implements ManitoRoomDetailRepositor
     public boolean existsById(Integer id) {
         return database.values().stream()
                 .anyMatch(ur -> ur.getId().equals(id));
-    }
-
-    @Override
-    public boolean existsByGroupRoomId(Integer groupRoomId) {
-        return database.values().stream()
-                .anyMatch(mrd -> mrd.getGroupRoomDetail().getId().equals(groupRoomId));
     }
 }

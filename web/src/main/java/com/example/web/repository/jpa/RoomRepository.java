@@ -1,8 +1,8 @@
-package com.example.web.repository;
+package com.example.web.repository.jpa;
 
 import com.example.web.domain.Room;
 import com.example.web.enums.RoomType;
-import com.example.web.repository.common.BaseRepository;
+import com.example.web.repository.jpa.common.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

@@ -28,7 +28,7 @@ public class PublishEventListener {
     )
     public void handleRoomEvent(RoomEvent roomEvent) {
         messagePublisher.publish(
-                channelPrefix + "/" + roomEvent.getRoomId(),
+                channelPrefix + roomEvent.getRoomId(),
                 roomEvent
         );
     }
