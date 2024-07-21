@@ -99,8 +99,8 @@ public class ManitoRoomService {
         // 닉네임을 설정합니다.
         userRoomService.setNicknameByUserRoomId(userRoomId, dto.getNickname());
 
-        // 입장 이벤트를 발행합니다.
-        applicationEventPublisher.publishEvent(new EnterRoomEvent(dto.getRoomId(), dto.getUserId(), dto.getNickname()));
+        // 마니또 채팅방 입장 이벤트를 발행합니다.
+        applicationEventPublisher.publishEvent(new EnterRoomEvent(dto.getRoomId(),RoomType.M, dto.getUserId(), dto.getNickname()));
 
         return EnterManitoRoomResponse.builder()
                 .userRoomId(userRoomId)
