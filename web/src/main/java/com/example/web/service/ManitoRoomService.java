@@ -61,8 +61,6 @@ public class ManitoRoomService {
         // 멤버 별로 마니또 채팅 미션을 지정한다.
         manitoMissionService.createUserRoomMissions(userRoomIds);
 
-        // TODO: 생성한 채팅방에 대한 event message 를 전송한다.(websocket)
-
         return CreateManitoRoomResponse.builder()
                 .groupRoomId(dto.getGroupRoomId())
                 .manitoRoomCount(pairs.size())

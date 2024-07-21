@@ -34,6 +34,11 @@
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
 
+                var userId = document.getElementById('user-id').value;
+                stompClient.subscribe('/user/event/' + userId, function (message) {
+                    console.log(message.body);
+                });
+
                 document.getElementById("connect").classList.add("hidden");
                 document.getElementById("subscribe").classList.remove("hidden");
                 document.getElementById("disconnect").classList.remove("hidden");

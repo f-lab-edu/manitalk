@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,9 @@ class UserRoomServiceTest {
 
     @Mock
     private EntityManager entityManager;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
 
     private UserRoomService userRoomService;
 
@@ -45,7 +50,7 @@ class UserRoomServiceTest {
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        userRoomService = new UserRoomService(new FakeUserRoomRepository(), entityManager);
+        userRoomService = new UserRoomService(new FakeUserRoomRepository(), entityManager, applicationEventPublisher);
 
         user = new User();
         room = new Room();

@@ -25,12 +25,20 @@ public class RedisMessageSubscriber implements MessageListener {
     @Value("${room.channel.prefix}")
     String roomChannelPrefix;
 
-    public void subscribeRoomChannel(Integer roomId) {
-        String fullChannel = channelPattern + roomChannelPrefix + roomId;
-        if (!subscribedChannels.contains(fullChannel)) {
-            // TODO: 로깅 작업을 추가합니다.
-            System.out.println("subscribe: " + channelPattern + roomChannelPrefix + roomId);
+    @Value("${user.channel.prefix}")
+    String userChannelPrefix;
 
+    public void subscribeRoomChannel(Integer roomId) {
+        subscribeChannel(roomChannelPrefix + roomId);
+    }
+
+    public void subscribeUserChannel(Integer userId) {
+        subscribeChannel(userChannelPrefix + userId);
+    }
+
+    private void subscribeChannel(String channel) {
+        String fullChannel = channelPattern + channel;
+        if (!subscribedChannels.contains(fullChannel)) {
             container.addMessageListener(this, new ChannelTopic(fullChannel));
             subscribedChannels.add(fullChannel);
         }
