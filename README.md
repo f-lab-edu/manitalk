@@ -92,8 +92,8 @@
         <td align="center">5. 마니또 채팅</td>
     </tr>
     <tr>
-        <td align="center"><img src="https://github.com/user-attachments/assets/6e024705-a3dd-4f6d-aa06-07ae0d8658a9"/></td>
         <td align="center"><img src="https://github.com/user-attachments/assets/996af053-1c48-4101-840b-a27ce0df7441"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/6e024705-a3dd-4f6d-aa06-07ae0d8658a9"/></td>
     </tr>
 </table>
 
