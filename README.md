@@ -59,7 +59,7 @@
     - 미션
         - 각각 ‘~말 듣기’ 미션이 주어진다.
         - 미션 키워드는 ‘고마워’, ‘최고야‘ 등의 칭찬의 말들로 구성한다.
-        - 마니또 채팅 기간동안 미션 키워드를 더 많이 들은 사람은 우수 마니또가 된다.
+        - 마니또 채팅 기간동안 미션 키워드를 가장 많이 들은 사람은 우수 마니또가 된다.
 
 - 마니또 채팅 나가기
     - 마니또 채팅은 나가기가 불가능하다.
@@ -71,6 +71,31 @@
 ### 회원가입 & 로그인
 
 - Google 계정으로 인증 및 로그인을 진행한다.
+
+<br>
+<br>
+
+## 프로토타입
+<table>
+    <tr>
+        <td align="center">1. 메인 화면</td>
+        <td align="center">2. 채팅 목록</td>
+        <td align="center">3. 그룹 채팅 입장</td>
+    </tr>
+    <tr>
+        <td align="center"><img src="https://github.com/user-attachments/assets/6bd81862-c995-46d8-ad39-783061d0e2f3"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/42657f03-91cb-464a-8a1a-1b4e45cb03b1"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/ffaa13a9-6ec8-4a1c-a723-ab55071a5a9f"/></td>
+    </tr>
+    <tr>
+        <td align="center">4. 그룹 채팅</td>
+        <td align="center">5. 마니또 채팅</td>
+    </tr>
+    <tr>
+        <td align="center"><img src="https://github.com/user-attachments/assets/6e024705-a3dd-4f6d-aa06-07ae0d8658a9"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/996af053-1c48-4101-840b-a27ce0df7441"/></td>
+    </tr>
+</table>
 
 <br>
 <br>
