@@ -26,7 +26,7 @@ public class EndManitoRoomTask {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Scheduled(fixedRate = 3600000)
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional
     public void endManitoRoom() {
 
         // 종료 대상 마니또 채팅방을 조회합니다.
