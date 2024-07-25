@@ -15,6 +15,14 @@
 <br>
 <br>
 
+## 사용 기술, 개발 환경
+JAVA,
+Spring Boot, Spring Web, Spring Websocket, Spring Data JPA/Redis/MongoDB,
+MySQL, Redis, MongoDB
+
+<br>
+<br>
+
 ## 핵심 기능
 
 ### 그룹 채팅
@@ -101,14 +109,22 @@
 <br>
 
 ## System Design: 시스템 디자인
-- [설계](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-%EC%84%A4%EA%B3%84)
-- [Database: ERD](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-Database-(ERD))
+👉 [설계](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-%EC%84%A4%EA%B3%84) <br><br>
+<img src="https://github.com/user-attachments/assets/beeca749-f53e-4cee-811d-39d74ba2871e" width="50%" height="30%"/>
+
+👉 [Database: ERD](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-Database-(ERD))<br><br>
+<img src="https://github.com/user-attachments/assets/e0e20e8e-a7be-4180-9b3e-b9d264d1bd8c" width="50%" height="30%"/>
 
 <br>
 
 ## Sequence Diagram: 시퀀스 다이어그램
-- [그룹 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EA%B7%B8%EB%A3%B9-%EC%B1%84%ED%8C%85)
-- [마니또 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A7%88%EB%8B%88%EB%98%90-%EC%B1%84%ED%8C%85)
-- [메시지 수발신](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A9%94%EC%8B%9C%EC%A7%80-%EC%88%98%EB%B0%9C%EC%8B%A0)
-
-
+👉 [그룹 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EA%B7%B8%EB%A3%B9-%EC%B1%84%ED%8C%85)<br>
+👉 [마니또 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A7%88%EB%8B%88%EB%98%90-%EC%B1%84%ED%8C%85)<br>
+👉 [메시지 수발신](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A9%94%EC%8B%9C%EC%A7%80-%EC%88%98%EB%B0%9C%EC%8B%A0)<br><br>
+<table>
+    <tr>
+        <td align="center"><img src="https://github.com/user-attachments/assets/443dab9d-9224-4986-913b-261e59309a3c"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/8cb403d5-eed2-4359-9ed5-1588f23f4574"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/d13b05b7-941b-4e7d-8028-460b9a2cf821"/></td>
+    </tr>
+</table>
