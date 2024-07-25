@@ -1,4 +1,4 @@
-# 마니톡(Manitalk)
+# 💬 마니톡(Manitalk)
 이번엔 누가 내 비밀친구가 될까? 마니또 채팅 서비스 마니톡!
 
 <p align="center">
@@ -7,7 +7,7 @@
 
 <br>
 
-## 소개
+## 📍소개
 
 모임의 구성원 모두가 다같이 그룹채팅을 즐기고,   
 1:1 랜덤으로 매칭되는 마니또 채팅을 통해 그 안에서 비밀 친구를 사귈 수 있는 그룹/개별 채팅 서비스
@@ -15,15 +15,15 @@
 <br>
 <br>
 
-## 사용 기술, 개발 환경
+## 📍사용 기술, 개발 환경
 JAVA,
-Spring Boot, Spring Web, Spring Websocket, Spring Data JPA/Redis/MongoDB,
+Spring Boot, Spring Web, Spring WebSocket, Spring Data JPA/Redis/MongoDB,
 MySQL, Redis, MongoDB
 
 <br>
 <br>
 
-## 핵심 기능
+## 📍핵심 기능
 
 ### 그룹 채팅
 
@@ -46,8 +46,6 @@ MySQL, Redis, MongoDB
     - 방장이 그룹 채팅을 종료한다.
     - 모든 멤버들이 채팅방에서 나가기 처리된다.
 
-
-    
 ### 마니또 채팅(1:1랜덤 채팅)
 
 - 마니또 채팅 시작
@@ -61,7 +59,6 @@ MySQL, Redis, MongoDB
         - 그룹 채팅방에서의 자신의 닉네임과 같을 수 없다.
         - 다른 사람의 닉네임과 중복은 가능하다.
     - 마니또 채팅이 시작되면 그룹 채팅방에 마니또 채팅 시작 알림과 기간이 표시된다.
-
 
 - 마니또 채팅 진행
     - 미션
@@ -83,7 +80,7 @@ MySQL, Redis, MongoDB
 <br>
 <br>
 
-## 프로토타입
+## 📍프로토타입
 <table>
     <tr>
         <td align="center">1. 메인 화면</td>
@@ -108,7 +105,7 @@ MySQL, Redis, MongoDB
 <br>
 <br>
 
-## System Design: 시스템 디자인
+## 📍System Design: 시스템 디자인
 👉 [설계](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-%EC%84%A4%EA%B3%84) <br><br>
 <img src="https://github.com/user-attachments/assets/beeca749-f53e-4cee-811d-39d74ba2871e" width="50%" height="30%"/>
 
@@ -117,7 +114,7 @@ MySQL, Redis, MongoDB
 
 <br>
 
-## Sequence Diagram: 시퀀스 다이어그램
+## 📍Sequence Diagram: 시퀀스 다이어그램
 👉 [그룹 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EA%B7%B8%EB%A3%B9-%EC%B1%84%ED%8C%85)<br>
 👉 [마니또 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A7%88%EB%8B%88%EB%98%90-%EC%B1%84%ED%8C%85)<br>
 👉 [메시지 수발신](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A9%94%EC%8B%9C%EC%A7%80-%EC%88%98%EB%B0%9C%EC%8B%A0)<br><br>
@@ -128,3 +125,13 @@ MySQL, Redis, MongoDB
         <td align="center"><img src="https://github.com/user-attachments/assets/d13b05b7-941b-4e7d-8028-460b9a2cf821"/></td>
     </tr>
 </table>
+
+<br>
+<br>
+
+## 📍프로젝트 중 고민했던 이슈 기록
+- [API 서버에서 채팅 서버로 이벤트 전송을 위한 트랜잭션 이벤트 처리하기](https://velog.io/@may33/%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EC%B2%98%EB%A6%AC%ED%95%98%EA%B8%B0-to-redis)
+- [비동기 작업을 위한 Thread Pool 설정하기](https://velog.io/@may33/Async%EC%9D%98-Thread-Pool-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0)
+
+<br>
+<br>
