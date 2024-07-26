@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface UserRoomRepository extends BaseRepository<UserRoom, Integer> {
@@ -17,9 +16,10 @@ public interface UserRoomRepository extends BaseRepository<UserRoom, Integer> {
     @Query("SELECT ur.user.id FROM UserRoom ur where ur.room.id = :roomId")
     List<Integer> findUserIdsByRoomId(@Param("roomId") Integer roomId);
 
-    void deleteByRoomId(Integer roomId);
-
     List<UserRoom> findByRoomId(Integer roomId);
 
-    Optional<UserRoom> findByUserIdAndRoomId(Integer userId, Integer roomId);
+    @Query("SELECT ur.id FROM UserRoom ur where ur.user.id = :userId AND ur.room.id = :roomId")
+    Integer findIdByUserIdAndRoomId(Integer userId, Integer roomId);
+
+    List<UserRoom> findAllByRoomIdIn(List<Integer> roomIds);
 }

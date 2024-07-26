@@ -1,4 +1,4 @@
-# 마니톡(Manitalk)
+# 💬 마니톡(Manitalk)
 이번엔 누가 내 비밀친구가 될까? 마니또 채팅 서비스 마니톡!
 
 <p align="center">
@@ -7,7 +7,7 @@
 
 <br>
 
-## 소개
+## 📍소개
 
 모임의 구성원 모두가 다같이 그룹채팅을 즐기고,   
 1:1 랜덤으로 매칭되는 마니또 채팅을 통해 그 안에서 비밀 친구를 사귈 수 있는 그룹/개별 채팅 서비스
@@ -15,7 +15,15 @@
 <br>
 <br>
 
-## 핵심 기능
+## 📍사용 기술, 개발 환경
+JAVA,
+Spring Boot, Spring Web, Spring WebSocket, Spring Data JPA/Redis/MongoDB,
+MySQL, Redis, MongoDB
+
+<br>
+<br>
+
+## 📍핵심 기능
 
 ### 그룹 채팅
 
@@ -38,8 +46,6 @@
     - 방장이 그룹 채팅을 종료한다.
     - 모든 멤버들이 채팅방에서 나가기 처리된다.
 
-
-    
 ### 마니또 채팅(1:1랜덤 채팅)
 
 - 마니또 채팅 시작
@@ -54,12 +60,11 @@
         - 다른 사람의 닉네임과 중복은 가능하다.
     - 마니또 채팅이 시작되면 그룹 채팅방에 마니또 채팅 시작 알림과 기간이 표시된다.
 
-
 - 마니또 채팅 진행
     - 미션
         - 각각 ‘~말 듣기’ 미션이 주어진다.
         - 미션 키워드는 ‘고마워’, ‘최고야‘ 등의 칭찬의 말들로 구성한다.
-        - 마니또 채팅 기간동안 미션 키워드를 더 많이 들은 사람은 우수 마니또가 된다.
+        - 마니또 채팅 기간동안 미션 키워드를 가장 많이 들은 사람은 우수 마니또가 된다.
 
 - 마니또 채팅 나가기
     - 마니또 채팅은 나가기가 불가능하다.
@@ -75,15 +80,58 @@
 <br>
 <br>
 
-## System Design: 시스템 디자인
-- [설계](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-%EC%84%A4%EA%B3%84)
-- [Database: ERD](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-Database-(ERD))
+## 📍프로토타입
+<table>
+    <tr>
+        <td align="center">1. 메인 화면</td>
+        <td align="center">2. 채팅 목록</td>
+        <td align="center">3. 그룹 채팅 입장</td>
+    </tr>
+    <tr>
+        <td align="center"><img src="https://github.com/user-attachments/assets/6bd81862-c995-46d8-ad39-783061d0e2f3"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/42657f03-91cb-464a-8a1a-1b4e45cb03b1"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/ffaa13a9-6ec8-4a1c-a723-ab55071a5a9f"/></td>
+    </tr>
+    <tr>
+        <td align="center">4. 그룹 채팅</td>
+        <td align="center">5. 마니또 채팅</td>
+    </tr>
+    <tr>
+        <td align="center"><img src="https://github.com/user-attachments/assets/996af053-1c48-4101-840b-a27ce0df7441"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/6e024705-a3dd-4f6d-aa06-07ae0d8658a9"/></td>
+    </tr>
+</table>
+
+<br>
+<br>
+
+## 📍System Design: 시스템 디자인
+👉 [설계](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-%EC%84%A4%EA%B3%84) <br><br>
+<img src="https://github.com/user-attachments/assets/beeca749-f53e-4cee-811d-39d74ba2871e" width="50%" height="30%"/>
+
+👉 [Database: ERD](https://github.com/f-lab-edu/manitalk/wiki/System-Design:-Database-(ERD))<br><br>
+<img src="https://github.com/user-attachments/assets/e0e20e8e-a7be-4180-9b3e-b9d264d1bd8c" width="50%" height="30%"/>
 
 <br>
 
-## Sequence Diagram: 시퀀스 다이어그램
-- [그룹 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EA%B7%B8%EB%A3%B9-%EC%B1%84%ED%8C%85)
-- [마니또 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A7%88%EB%8B%88%EB%98%90-%EC%B1%84%ED%8C%85)
-- [메시지 수발신](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A9%94%EC%8B%9C%EC%A7%80-%EC%88%98%EB%B0%9C%EC%8B%A0)
+## 📍Sequence Diagram: 시퀀스 다이어그램
+👉 [그룹 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EA%B7%B8%EB%A3%B9-%EC%B1%84%ED%8C%85)<br>
+👉 [마니또 채팅](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A7%88%EB%8B%88%EB%98%90-%EC%B1%84%ED%8C%85)<br>
+👉 [메시지 수발신](https://github.com/f-lab-edu/manitalk/wiki/Sequence-Diagram:-%EB%A9%94%EC%8B%9C%EC%A7%80-%EC%88%98%EB%B0%9C%EC%8B%A0)<br><br>
+<table>
+    <tr>
+        <td align="center"><img src="https://github.com/user-attachments/assets/443dab9d-9224-4986-913b-261e59309a3c"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/8cb403d5-eed2-4359-9ed5-1588f23f4574"/></td>
+        <td align="center"><img src="https://github.com/user-attachments/assets/d13b05b7-941b-4e7d-8028-460b9a2cf821"/></td>
+    </tr>
+</table>
 
+<br>
+<br>
 
+## 📍프로젝트 중 고민했던 이슈 기록
+- [API 서버에서 채팅 서버로 이벤트 전송을 위한 트랜잭션 이벤트 처리하기](https://velog.io/@may33/%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EC%B2%98%EB%A6%AC%ED%95%98%EA%B8%B0-to-redis)
+- [비동기 작업을 위한 Thread Pool 설정하기](https://velog.io/@may33/Async%EC%9D%98-Thread-Pool-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0)
+
+<br>
+<br>

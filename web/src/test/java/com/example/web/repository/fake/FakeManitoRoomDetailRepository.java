@@ -2,9 +2,12 @@ package com.example.web.repository.fake;
 
 import com.example.web.domain.ManitoRoomDetail;
 import com.example.web.repository.jpa.ManitoRoomDetailRepository;
+import com.example.web.vo.ManitoRoomDetailVo;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class FakeManitoRoomDetailRepository implements ManitoRoomDetailRepository {
 
@@ -68,5 +71,21 @@ public class FakeManitoRoomDetailRepository implements ManitoRoomDetailRepositor
     public boolean existsByGroupRoomId(Integer groupRoomId) {
         return database.values().stream()
                 .anyMatch(mrd -> mrd.getGroupRoomDetail().getId().equals(groupRoomId));
+    }
+
+    @Override
+    public List<ManitoRoomDetailVo> findExpiredManitoRooms(LocalDateTime start, LocalDateTime end) {
+        return database.values().stream()
+                .filter(mrd -> mrd.getExpiresAt().isAfter(start) && mrd.getExpiresAt().isBefore(end))
+                .map(mrd -> new ManitoRoomDetailVo(mrd.getId(), mrd.getGroupRoomDetail().getId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ManitoRoomDetail> findAllByIdIn(List<Integer> ids) {
+        return ids.stream()
+                .map(database::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

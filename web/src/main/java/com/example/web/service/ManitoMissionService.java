@@ -6,10 +6,10 @@ import com.example.web.vo.MissionVo;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +19,8 @@ public class ManitoMissionService {
     private String missionCacheName;
 
     private final UserRoomMissionRepository userRoomMissionRepository;
-
     private final MissionService missionService;
-
     private final CacheService cacheService;
-
     private final EntityManager entityManager;
 
     public void createUserRoomMissions(List<Integer> userRoomIds) {
@@ -59,5 +56,10 @@ public class ManitoMissionService {
             // TODO: 로깅 추가
             System.out.println(e.getMessage());
         }
+    }
+
+    @Cacheable(cacheNames = "mission", key = "#userRoomId")
+    public String getMissionKeyword(Integer userRoomId) {
+        return Objects.requireNonNull(userRoomMissionRepository.findById(userRoomId).orElse(null)).getMission().getKeyword();
     }
 }

@@ -6,6 +6,7 @@ import com.example.web.repository.jpa.RoomRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class FakeRoomRepository implements RoomRepository {
 
@@ -77,5 +78,13 @@ public class FakeRoomRepository implements RoomRepository {
     public boolean existsByIdAndType(Integer id, RoomType type) {
         return database.values().stream()
                 .anyMatch(r -> !r.isDeleted() && r.getId().equals(id) && r.getType().equals(type));
+    }
+
+    @Override
+    public List<Room> findAllByIdIn(List<Integer> ids) {
+        return ids.stream()
+                .map(database::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }
