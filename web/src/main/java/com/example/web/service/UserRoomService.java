@@ -4,10 +4,12 @@ import com.example.web.domain.Room;
 import com.example.web.domain.User;
 import com.example.web.domain.UserRoom;
 import com.example.web.dto.CreateUserRoomsParam;
+import com.example.web.event.CreateManitoRoomEvent;
 import com.example.web.repository.jpa.UserRoomRepository;
 import com.example.web.vo.UserRoomVo;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import com.example.web.dto.CreateUserRoomParam;
 
@@ -21,8 +23,8 @@ import java.util.stream.Collectors;
 public class UserRoomService {
 
     private final UserRoomRepository userRoomRepository;
-
     private final EntityManager entityManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public UserRoomVo createUserRoom(CreateUserRoomParam param) {
         UserRoom userRoom = makeUserRoom(param.getUserId(), param.getRoomId(), param.getNickname());
@@ -48,6 +50,10 @@ public class UserRoomService {
             int roomId = param.getRoomIds().get(i.get());
             userRooms.add(makeUserRoom(firstUserId, roomId, null));
             userRooms.add(makeUserRoom(secondUserId, roomId, null));
+
+            // 마니또 채팅방 생성 이벤트를 발행합니다.
+            applicationEventPublisher.publishEvent(new CreateManitoRoomEvent(firstUserId, roomId));
+            applicationEventPublisher.publishEvent(new CreateManitoRoomEvent(secondUserId, roomId));
 
             i.getAndIncrement();
         });

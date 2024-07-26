@@ -3,6 +3,7 @@ package com.example.web.service;
 import com.example.web.dto.*;
 import com.example.web.enums.RoomType;
 import com.example.web.event.EndRoomEvent;
+import com.example.web.event.EnterRoomEvent;
 import com.example.web.exception.room.*;
 import com.example.web.exception.user.UserNotFoundException;
 import com.example.web.dto.CreateRoomParam;
@@ -80,6 +81,9 @@ public class GroupRoomService {
                 .nickname(dto.getNickname())
                 .build();
         UserRoomVo userRoomVo = userRoomService.createUserRoom(createUserRoomParam);
+
+        // 그룹 채팅방 입장 이벤트를 발행합니다.
+        applicationEventPublisher.publishEvent(new EnterRoomEvent(dto.getRoomId(), RoomType.G, dto.getUserId(), dto.getNickname()));
 
         return EnterRoomResponse.builder()
                 .userRoomId(userRoomVo.getId())
