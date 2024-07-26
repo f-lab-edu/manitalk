@@ -11,10 +11,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,23 +43,19 @@ public class BestManitoService {
     }
 
     public List<BestManitoVo> getBestManitoVos(List<UserRoomVo> userRoomList) {
-        List<BestManitoVo> bestManitoVos = new ArrayList<>();
-        int maxCount = 0;
-
-        for (UserRoomVo userRoomVo : userRoomList) {
-            String mission = manitoMissionService.getMissionKeyword(userRoomVo.getId());
-            Integer count = messageService.aggregateMissionCount(userRoomVo.getRoomId(), userRoomVo.getUserId(), mission);
-
-            if (count > maxCount) {
-                bestManitoVos.clear();
-                maxCount = count;
-            }
-            if (count >= maxCount) {
-                bestManitoVos.add(new BestManitoVo(userRoomVo.getId(), userRoomVo.getNickname()));
-            }
-        }
-
-        return bestManitoVos;
+        return userRoomList.stream()
+                .map(userRoomVo -> {
+                    String mission = manitoMissionService.getMissionKeyword(userRoomVo.getId());
+                    Integer count = messageService.aggregateMissionCount(userRoomVo.getRoomId(), userRoomVo.getUserId(), mission);
+                    return new AbstractMap.SimpleEntry<>(count, new BestManitoVo(userRoomVo.getId(), userRoomVo.getNickname()));
+                })
+                .collect(Collectors.groupingBy(
+                        AbstractMap.SimpleEntry::getKey,
+                        TreeMap::new,
+                        Collectors.mapping(AbstractMap.SimpleEntry::getValue, Collectors.toList())
+                ))
+                .lastEntry()
+                .getValue();
     }
 
     private void saveBestManitos(List<BestManitoVo> bestManitoVos) {
