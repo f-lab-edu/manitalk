@@ -17,7 +17,7 @@ public interface ManitoRoomDetailRepository extends BaseRepository<ManitoRoomDet
     boolean existsByGroupRoomId(@Param("groupRoomId") Integer groupRoomId);
 
     @Query("SELECT new com.example.web.vo.ManitoRoomDetailVo(mrd.id, mrd.groupRoomDetail.id) from ManitoRoomDetail mrd " +
-            "where mrd.expiresAt >= :start AND mrd.expiresAt <= :end")
+            "where mrd.expiresAt >= :start AND mrd.expiresAt <= :end order by mrd.id LIMIT 100")
     List<ManitoRoomDetailVo> findExpiredManitoRooms(@Param("start")LocalDateTime start, @Param("end")LocalDateTime end);
 
     List<ManitoRoomDetail> findAllByIdIn(List<Integer> ids);
