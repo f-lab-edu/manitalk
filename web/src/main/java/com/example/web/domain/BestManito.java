@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,34 +14,20 @@ import java.time.LocalDateTime;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "manito_room_details")
+@Table(name = "best_manitos")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("deleted = false")
-public class ManitoRoomDetail {
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+public class BestManito {
 
     @Id
-    @Column(name = "room_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "room_id")
-    @JsonBackReference
-    @JsonIgnoreProperties
-    private Room room;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_room_id", nullable = false)
+    @JoinColumn(name = "user_room_id")
     @JsonBackReference
     @JsonIgnoreProperties
-    private GroupRoomDetail groupRoomDetail;
-
-    @Setter
-    private boolean deleted = Boolean.FALSE;
-
-    @Column
-    private LocalDateTime expiresAt;
+    private UserRoom userRoom;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -52,9 +36,7 @@ public class ManitoRoomDetail {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public ManitoRoomDetail(Room room, GroupRoomDetail groupRoomDetail, LocalDateTime expiresAt) {
-        this.room = room;
-        this.groupRoomDetail = groupRoomDetail;
-        this.expiresAt = expiresAt;
+    public BestManito(UserRoom userRoom) {
+        this.userRoom = userRoom;
     }
 }

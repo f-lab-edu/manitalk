@@ -13,7 +13,6 @@ import com.example.web.dto.CreateUserRoomParam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -29,7 +28,7 @@ public class UserRoomService {
         UserRoom userRoom = makeUserRoom(param.getUserId(), param.getRoomId(), param.getNickname());
         userRoom = userRoomRepository.save(userRoom);
 
-        return createUserRoomVo(userRoom);
+        return new UserRoomVo(userRoom.getId(), param.getUserId(), param.getRoomId(), userRoom.getNickname());
     }
 
     public List<Integer> createUserRooms(CreateUserRoomsParam param) {
@@ -71,10 +70,6 @@ public class UserRoomService {
         return userRoomRepository.findUserIdsByRoomId(roomId);
     }
 
-    private UserRoomVo createUserRoomVo(UserRoom userRoom) {
-        return new UserRoomVo(userRoom.getId(), userRoom.getNickname());
-    }
-
     public void softDeleteByRoomId(Integer roomId) {
         userRoomRepository.findByRoomId(roomId).forEach(
                 userRoom -> {
@@ -84,14 +79,30 @@ public class UserRoomService {
         );
     }
 
+    public void softDeleteAllByRoomIds(List<Integer> roomIds) {
+        List<UserRoom> userRooms = userRoomRepository.findAllByRoomIdIn(roomIds);
+        userRooms.forEach(manitoRoomDetail -> manitoRoomDetail.setDeleted(true));
+        userRoomRepository.saveAll(userRooms);
+    }
+
     public Integer getUserRoomId(Integer userId, Integer roomId) {
-        Optional<UserRoom> userRoom = userRoomRepository.findByUserIdAndRoomId(userId, roomId);
-        return userRoom.map(UserRoom::getId).orElse(null);
+        return userRoomRepository.findIdByUserIdAndRoomId(userId, roomId);
     }
 
     public void setNicknameByUserRoomId(Integer userRoomId, String nickname) {
         UserRoom userRoom = entityManager.getReference(UserRoom.class, userRoomId);
         userRoom.setNickname(nickname);
         userRoomRepository.save(userRoom);
+    }
+
+    public List<UserRoomVo> getUserRoomList(List<Integer> roomIds) {
+        List<UserRoom> userRooms = userRoomRepository.findAllByRoomIdIn(roomIds);
+        return userRooms.stream()
+                .map(userRoom -> new UserRoomVo(
+                        userRoom.getId(),
+                        userRoom.getUser().getId(),
+                        userRoom.getRoom().getId(),
+                        userRoom.getNickname()))
+                .collect(Collectors.toList());
     }
 }

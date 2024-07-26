@@ -36,6 +36,6 @@ public class PublishEventListener {
     @Recover
     private void failRoomEvent(RoomEvent roomEvent) {
         // TODO: 최종 실패 로깅 처리
-        System.out.println(roomEvent.roomId + " - 삭제 이벤트 전송 실패");
+        System.out.println(roomEvent.roomId + "-" + roomEvent.getEventType().toString() +" 이벤트 전송 실패");
     }
 }

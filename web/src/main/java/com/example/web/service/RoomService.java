@@ -61,4 +61,10 @@ public class RoomService {
                 }
         );
     }
+
+    public void softDeleteAllByIds(List<Integer> ids) {
+        List<Room> rooms = roomRepository.findAllByIdIn(ids);
+        rooms.forEach(room -> room.setDeleted(true));
+        roomRepository.saveAll(rooms);
+    }
 }

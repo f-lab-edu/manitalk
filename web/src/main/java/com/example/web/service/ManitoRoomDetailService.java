@@ -5,6 +5,7 @@ import com.example.web.domain.ManitoRoomDetail;
 import com.example.web.domain.Room;
 import com.example.web.dto.CreateManitoRoomDetailsParam;
 import com.example.web.repository.jpa.ManitoRoomDetailRepository;
+import com.example.web.vo.ManitoRoomDetailVo;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,5 +47,21 @@ public class ManitoRoomDetailService {
 
     public boolean isExistsManitoRoomsInGroup(Integer groupRoomId) {
         return manitoRoomDetailRepository.existsByGroupRoomId(groupRoomId);
+    }
+
+    public Map<Integer, List<Integer>> getExpiredManitoRooms() {
+        List<ManitoRoomDetailVo> manitoRoomDetails = manitoRoomDetailRepository.findExpiredManitoRooms(LocalDateTime.now().minusDays(1), LocalDateTime.now());
+
+        return manitoRoomDetails.stream()
+                .collect(Collectors.groupingBy(
+                        ManitoRoomDetailVo::getGroupRoomId,
+                        Collectors.mapping(ManitoRoomDetailVo::getRoomId, Collectors.toList())
+                ));
+    }
+
+    public void softDeleteAllByIds(List<Integer> ids) {
+        List<ManitoRoomDetail> manitoRoomDetails = manitoRoomDetailRepository.findAllByIdIn(ids);
+        manitoRoomDetails.forEach(manitoRoomDetail -> manitoRoomDetail.setDeleted(true));
+        manitoRoomDetailRepository.saveAll(manitoRoomDetails);
     }
 }
