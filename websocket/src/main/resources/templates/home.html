@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Manitalk</title>
@@ -27,6 +27,10 @@
         var stompClient = null;
         var url = '/manitalk/ws';
 
+        window.onload = function() {
+            connect();
+        }
+
         function connect() {
             var socket = new SockJS(url);
             stompClient = Stomp.over(socket);
@@ -34,7 +38,13 @@
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
 
-                var userId = document.getElementById('user-id').value;
+                const params = new URLSearchParams(window.location.search);
+                var userId = Object.fromEntries(params.entries()).userId;
+                document.getElementById('user-id').value = userId;
+                if (userId == null) {
+                    return;
+                }
+
                 stompClient.subscribe('/user/event/' + userId, function (message) {
                     console.log(message.body);
                 });
@@ -105,16 +115,22 @@
             if (stompClient !== null) {
                 stompClient.disconnect();
             }
-            console.log("Disconnected");
-            document.getElementById("connect").classList.remove("hidden");
-            document.getElementById("subscribe").classList.add("hidden");
-            document.getElementById("disconnect").classList.add("hidden");
 
-            document.getElementById("chatBox").classList.add("hidden");
-            var responseDiv = document.getElementById("chatBox");
-            while (responseDiv.firstChild) {
-                responseDiv.removeChild(responseDiv.firstChild);
-            }
+            var logoutUrl = document.getElementById("logoutUrl").getAttribute('data-url');
+
+            fetch(logoutUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            })
+            .then(data => {
+                window.location.href = "/login";
+            })
+            .catch(error => {
+                console.error('Logout failed:', error);
+            });
         }
 
         function showMessage(roomId, message) {
@@ -131,12 +147,12 @@
 </head>
 <body>
 <h2>* Manitalk *</h2>
-<div id="connect">
+<div id="logoutUrl" class="hidden" th:data-url="${logoutUrl}"></div>
+<div id="connect" class="hidden">
     <label for="user-id">사용자 ID: </label><input id="user-id">
-    <button onclick="connect()">Connect</button>
 </div>
 <div id="disconnect" class="hidden">
-    <button onclick="disconnect()">Disconnect</button>
+    <button onclick="disconnect()">Logout</button>
 </div>
 <br>
 <br>
