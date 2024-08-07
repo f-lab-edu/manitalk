@@ -5,6 +5,7 @@ import com.example.web.repository.jpa.UserRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class FakeUserRepository implements UserRepository {
 
@@ -62,5 +63,12 @@ public class FakeUserRepository implements UserRepository {
     public boolean existsById(Integer id) {
         return database.values().stream()
                 .anyMatch(ur -> ur.getId().equals(id));
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return database.values().stream()
+                .filter(ur -> ur.getEmail().equals(email))
+                .findFirst();
     }
 }
