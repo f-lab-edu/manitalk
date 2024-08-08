@@ -14,6 +14,11 @@ public class UserController {
     @Value("${logout.url}")
     private String logoutUrl;
 
+    @GetMapping("/")
+    public String index() {
+        return "redirect:login";
+    }
+
     @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("authUrl", authUrl);
