@@ -46,12 +46,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/**", "/login", "/oauth2/**", "/manitalk-api-docs","/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/", "/login/**", "/oauth2/**", "/manitalk-api-docs","/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2Login ->
                         oauth2Login
-                                .loginPage("/login")
                                 .successHandler(customAuthenticationSuccessHandler)
                                 .userInfoEndpoint(userInfoEndpoint ->
                                         userInfoEndpoint
