@@ -1,102 +1,76 @@
 package com.example.web.controller;
 
-import com.example.web.config.TestConfig;
+import com.example.web.advice.GlobalExceptionHandler;
 import com.example.web.dto.*;
-import com.example.web.enums.RoomType;
 import com.example.web.service.GroupRoomService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = GroupRoomController.class)
-@MockBean(JpaMetamodelMappingContext.class)
-@ContextConfiguration(classes = {TestConfig.class})
+@ExtendWith(MockitoExtension.class)
 class GroupRoomControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @InjectMocks
+    private GroupRoomController groupRoomController;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
+    @Mock
     private GroupRoomService groupRoomService;
 
-    Integer userId = 1;
+    private MockMvc mockMvc;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
-    Integer roomId = 1;
-
-    Integer userRoomId = 1;
-
-    Integer roomOwnerId = 1;
-
-    String roomName = "test_room";
-
-    String enterCode = "test_code";
-
-    String nickname = "test";
+    @BeforeEach
+    public void beforeEach() {
+        mockMvc = MockMvcBuilders.standaloneSetup(groupRoomController)
+                .setControllerAdvice(globalExceptionHandler)
+                .build();
+    }
 
     @Test
     @DisplayName("그룹 채팅방을 생성합니다.")
     void create_group_room() throws Exception {
 
         // given
-        CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
-
-        CreateGroupRoomResponse createGroupRoomResponse = getCreateGroupRoomResponse();
-        when(groupRoomService.createGroupRoom(any(CreateGroupRoomRequest.class))).thenReturn(createGroupRoomResponse);
-
-        // when & then
-        mockMvc.perform(post("/group/room")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(createGroupRoomResponse))
-        );
-    }
-
-    @Test
-    @DisplayName("그룹 채팅방을 생성에 실패합니다. : 유효성검사 실패")
-    void create_group_room_유효성검사_실패() throws Exception {
-
-        // given
-        roomName = "";
-        enterCode = "";
-        CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
-
-        when(groupRoomService.createGroupRoom(any(CreateGroupRoomRequest.class))).thenReturn(getCreateGroupRoomResponse());
+        CreateGroupRoomRequest requestDto = new CreateGroupRoomRequest(1, "testRoom", "testCode");
 
         // when & then
         mockMvc.perform(post("/group/room")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk());
+
+        verify(groupRoomService).createGroupRoom(requestDto);
     }
 
-    CreateGroupRoomResponse getCreateGroupRoomResponse() {
-        return CreateGroupRoomResponse.builder()
-                .id(roomId)
-                .roomType(RoomType.G)
-                .roomName(roomName)
-                .roomOwnerId(roomOwnerId)
-                .enterCode(enterCode)
-                .build();
+    @Test
+    @DisplayName("그룹 채팅방 생성에 실패합니다. : 유효성검사 실패")
+    void create_group_room_유효성검사_실패() throws Exception {
+
+        // given
+        CreateGroupRoomRequest requestDto = new CreateGroupRoomRequest(1, "testRoom", "");
+
+        // when & then
+        mockMvc.perform(post("/group/room")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("채팅방 입장 코드는 반드시 입력해야 합니다."))
+        ;
     }
 
     @Test
@@ -104,24 +78,21 @@ class GroupRoomControllerTest {
     void enter_group_room() throws Exception {
 
         // given
-        EnterGroupRoomRequest enterGroupRoomRequest = new EnterGroupRoomRequest(
-                userId,
-                roomId,
-                roomName,
-                enterCode,
-                nickname
+        EnterGroupRoomRequest requestDto = new EnterGroupRoomRequest(
+                1,
+                1,
+                "testRoom",
+                "testCode",
+                "nickname"
         );
-
-        EnterRoomResponse enterRoomResponse = getEnterRoomResponse();
-        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getEnterRoomResponse());
 
         // when & then
         mockMvc.perform(post("/group/room/enter")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(enterGroupRoomRequest)))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(enterRoomResponse))
-                );
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk());
+
+        verify(groupRoomService).enterGroupRoom(requestDto);
     }
 
     @Test
@@ -129,29 +100,21 @@ class GroupRoomControllerTest {
     void enter_group_room_유효성검사_실패() throws Exception {
 
         // given
-        EnterGroupRoomRequest enterGroupRoomRequest = new EnterGroupRoomRequest(
-                userId,
-                roomId,
+        EnterGroupRoomRequest requestDto = new EnterGroupRoomRequest(
+                1,
+                1,
+                "testRoom",
                 "",
-                "",
-                ""
+                "nickname"
         );
-
-        when(groupRoomService.enterGroupRoom(any(EnterGroupRoomRequest.class))).thenReturn(getEnterRoomResponse());
 
         // when & then
         mockMvc.perform(post("/group/room/enter")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(enterGroupRoomRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    EnterRoomResponse getEnterRoomResponse() {
-        return EnterRoomResponse.builder()
-                .userRoomId(userRoomId)
-                .nickname(nickname)
-                .build();
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("입장 코드는 반드시 입력해야 합니다."));
     }
 
     @Test
@@ -159,22 +122,14 @@ class GroupRoomControllerTest {
     void end_group_room() throws Exception {
 
         // given
-        EndGroupRoomRequest endGroupRoomRequest = new EndGroupRoomRequest(
-                roomId,
-                roomOwnerId
-        );
-
-        EndRoomResponse endRoomResponse = EndRoomResponse.builder()
-                .roomId(roomId)
-                .build();
-        when(groupRoomService.endGroupRoom(any(EndGroupRoomRequest.class))).thenReturn(endRoomResponse);
+        EndGroupRoomRequest requestDto = new EndGroupRoomRequest(1, 1);
 
         // when & then
         mockMvc.perform(delete("/group/room")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(endGroupRoomRequest)))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(endRoomResponse))
-                );
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk());
+
+        verify(groupRoomService).endGroupRoom(requestDto);
     }
 }
