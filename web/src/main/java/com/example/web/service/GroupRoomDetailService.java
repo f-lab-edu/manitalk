@@ -28,21 +28,17 @@ public class GroupRoomDetailService {
 
         groupRoomDetail = groupRoomDetailRepository.save(groupRoomDetail);
 
-        return createGroupRoomDetailVo(groupRoomDetail);
+        return new GroupRoomDetailVo(
+                groupRoomDetail.getRoomName(),
+                groupRoomDetail.getRoomOwnerId(),
+                groupRoomDetail.getEnterCode()
+        );
     }
 
     public boolean isRightEnterCode(Integer roomId, String enterCode) {
         Optional<GroupRoomDetail> groupRoomDetail = groupRoomDetailRepository.findById(roomId);
         return groupRoomDetail.isPresent() &&
                 groupRoomDetail.get().getEnterCode().equals(enterCode);
-    }
-
-    private GroupRoomDetailVo createGroupRoomDetailVo(GroupRoomDetail groupRoomDetail) {
-        return new GroupRoomDetailVo(
-                groupRoomDetail.getRoomName(),
-                groupRoomDetail.getRoomOwnerId(),
-                groupRoomDetail.getEnterCode()
-        );
     }
 
     public boolean isRoomOwner(Integer roomId, Integer userId) {
