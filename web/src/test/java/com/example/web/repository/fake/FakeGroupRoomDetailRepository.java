@@ -3,6 +3,7 @@ package com.example.web.repository.fake;
 import com.example.web.domain.GroupRoomDetail;
 import com.example.web.repository.jpa.GroupRoomDetailRepository;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,7 +22,12 @@ public class FakeGroupRoomDetailRepository implements GroupRoomDetailRepository 
     public <S extends GroupRoomDetail> S save(S entity) {
         Integer id = entity.getId();
         if (entity.getId() == null) {
-            id = idGenerator.incrementAndGet();
+            id = entity.getRoom() != null ? entity.getRoom().getId() : idGenerator.incrementAndGet();
+            try {
+                setId(entity, id);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         database.put(id, entity);
         return entity;
@@ -76,5 +82,11 @@ public class FakeGroupRoomDetailRepository implements GroupRoomDetailRepository 
     public boolean existsByIdAndRoomOwnerId(Integer roomId, Integer userId) {
         return database.values().stream()
                 .anyMatch(grd -> !grd.isDeleted() && grd.getRoom().getId().equals(roomId) && grd.getRoomOwnerId().equals(userId));
+    }
+
+    private void setId(GroupRoomDetail groupRoomDetail, Integer id) throws Exception {
+        Field idField = GroupRoomDetail.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(groupRoomDetail, id);
     }
 }

@@ -3,6 +3,7 @@ package com.example.web.repository.fake;
 import com.example.web.domain.UserRoomMission;
 import com.example.web.repository.jpa.UserRoomMissionRepository;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,7 +21,12 @@ public class FakeUserRoomMissionRepository implements UserRoomMissionRepository 
     public <S extends UserRoomMission> S save(S entity) {
         Integer id = entity.getId();
         if (entity.getId() == null) {
-            id = idGenerator.incrementAndGet();
+            id = entity.getUserRoom() != null ? entity.getUserRoom().getId() : idGenerator.incrementAndGet();
+            try {
+                setId(entity, id);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         database.put(id, entity);
         return entity;
@@ -62,5 +68,11 @@ public class FakeUserRoomMissionRepository implements UserRoomMissionRepository 
     public boolean existsById(Integer id) {
         return database.values().stream()
                 .anyMatch(ur -> ur.getId().equals(id));
+    }
+
+    private void setId(UserRoomMission userRoomMission, Integer id) throws Exception {
+        Field idField = UserRoomMission.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(userRoomMission, id);
     }
 }
