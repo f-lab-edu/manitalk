@@ -1,6 +1,7 @@
 package com.example.web.domain;
 
 import com.example.web.enums.MessageType;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Document(collection = "messages")
 @Getter
+@EqualsAndHashCode
 public class Message {
 
     @Id
