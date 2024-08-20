@@ -1,10 +1,7 @@
 package com.example.web.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,6 +14,7 @@ import java.util.List;
 @Table(name = "missions")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
+@EqualsAndHashCode
 public class Mission {
 
     @Id

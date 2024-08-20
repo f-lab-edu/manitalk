@@ -3,9 +3,9 @@ package com.example.web.repository.fake;
 import com.example.web.domain.User;
 import com.example.web.repository.jpa.UserRepository;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class FakeUserRepository implements UserRepository {
 
@@ -22,6 +22,11 @@ public class FakeUserRepository implements UserRepository {
         Integer id = entity.getId();
         if (entity.getId() == null) {
             id = idGenerator.incrementAndGet();
+            try {
+                setId(entity, id);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         database.put(id, entity);
         return entity;
@@ -70,5 +75,11 @@ public class FakeUserRepository implements UserRepository {
         return database.values().stream()
                 .filter(ur -> ur.getEmail().equals(email))
                 .findFirst();
+    }
+
+    private void setId(User user, Integer id) throws Exception {
+        Field idField = User.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(user, id);
     }
 }

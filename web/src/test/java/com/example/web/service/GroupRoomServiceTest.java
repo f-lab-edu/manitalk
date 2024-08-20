@@ -1,79 +1,63 @@
 package com.example.web.service;
 
+import com.example.web.domain.*;
 import com.example.web.dto.*;
 import com.example.web.enums.RoomType;
-import com.example.web.dto.CreateRoomParam;
-import com.example.web.dto.CreateUserRoomParam;
 import com.example.web.exception.room.CanNotDeleteRoomException;
 import com.example.web.exception.room.CanNotEnterRoomException;
 import com.example.web.exception.room.DuplicatedUserRoomException;
 import com.example.web.exception.room.RoomNotFoundException;
 import com.example.web.exception.user.UserNotFoundException;
-import com.example.web.vo.GroupRoomDetailVo;
-import com.example.web.vo.RoomVo;
-import com.example.web.vo.UserRoomVo;
+import com.example.web.repository.fake.*;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import com.example.web.dto.CreateGroupRoomDetailParam;
 import org.springframework.context.ApplicationEventPublisher;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class GroupRoomServiceTest {
 
     @Mock
-    private RoomService roomService;
-
-    @Mock
-    private GroupRoomDetailService groupRoomDetailService;
-
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private UserRoomService userRoomService;
-
-    @Mock
-    private ManitoRoomDetailService manitoRoomDetailService;
+    private EntityManager entityManager;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
 
-    @InjectMocks
+    private final FakeRoomRepository roomRepository = new FakeRoomRepository();
+    private final FakeGroupRoomDetailRepository groupRoomDetailRepository = new FakeGroupRoomDetailRepository();
+    private final FakeUserRepository userRepository = new FakeUserRepository();
+    private final FakeUserRoomRepository userRoomRepository = new FakeUserRoomRepository();
+    private final FakeManitoRoomDetailRepository manitoRoomDetailRepository = new FakeManitoRoomDetailRepository();
+
     private GroupRoomService groupRoomService;
-
-    Integer userId = 1;
-
-    Integer roomId = 1;
-
-    Integer userRoomId = 1;
-
-    Integer roomOwnerId = 1;
-
-    String roomName = "test_room";
-
-    String enterCode = "test_code";
-
-    String nickname = "test";
-
-    EnterGroupRoomRequest enterGroupRoomRequest;
 
     @BeforeEach
     public void setUp() throws Exception {
-        enterGroupRoomRequest = new EnterGroupRoomRequest(
-                userId,
-                roomId,
-                roomName,
-                enterCode,
-                nickname
+        MockitoAnnotations.openMocks(this);
+        RoomService roomService = new RoomService(roomRepository);
+        GroupRoomDetailService groupRoomDetailService = new GroupRoomDetailService(groupRoomDetailRepository, entityManager);
+        UserService userService = new UserService(userRepository);
+        UserRoomService userRoomService = new UserRoomService(userRoomRepository, entityManager, applicationEventPublisher);
+        ManitoRoomDetailService manitoRoomDetailService = new ManitoRoomDetailService(manitoRoomDetailRepository, entityManager);
+
+        groupRoomService = new GroupRoomService(
+                roomService,
+                groupRoomDetailService,
+                manitoRoomDetailService,
+                userService,
+                userRoomService,
+                applicationEventPublisher
         );
     }
 
@@ -82,24 +66,21 @@ class GroupRoomServiceTest {
     void create_group_room() {
 
         // given
-        RoomVo roomVo = new RoomVo(roomId, RoomType.G);
-        when(roomService.createRoom(any(CreateRoomParam.class))).thenReturn(roomVo);
-
-        GroupRoomDetailVo groupRoomDetailVo = new GroupRoomDetailVo(roomName, roomOwnerId, enterCode);
-        when(groupRoomDetailService.createGroupRoomDetail(any(CreateGroupRoomDetailParam.class)))
-                .thenReturn(groupRoomDetailVo);
-
+        Integer roomOwnerId = 1;
+        String roomName = "testRoom";
+        String enterCode = "testCode";
         CreateGroupRoomRequest dto = new CreateGroupRoomRequest(roomOwnerId, roomName, enterCode);
 
         // when
         CreateGroupRoomResponse createGroupRoomResponse = groupRoomService.createGroupRoom(dto);
 
         // then
-        Assertions.assertEquals(createGroupRoomResponse.getId(), roomId);
-        Assertions.assertEquals(createGroupRoomResponse.getRoomType(), RoomType.G);
-        Assertions.assertEquals(createGroupRoomResponse.getRoomOwnerId(), roomOwnerId);
-        Assertions.assertEquals(createGroupRoomResponse.getRoomName(), roomName);
-        Assertions.assertEquals(createGroupRoomResponse.getEnterCode(), enterCode);
+        Assertions.assertAll(
+                () -> assertEquals(createGroupRoomResponse.getRoomType(), RoomType.G),
+                () -> assertEquals(createGroupRoomResponse.getRoomOwnerId(), roomOwnerId),
+                () -> assertEquals(createGroupRoomResponse.getRoomName(), roomName),
+                () -> assertEquals(createGroupRoomResponse.getEnterCode(), enterCode)
+        );
     }
 
     @Test
@@ -107,94 +88,141 @@ class GroupRoomServiceTest {
     void enter_group_room() {
 
         //given
-        when(roomService.isExistsRoom(any())).thenReturn(true);
-        when(roomService.isGroupRoom(any())).thenReturn(true);
-        when(groupRoomDetailService.isRightEnterCode(any(), any())).thenReturn(true);
-        when(userService.isExistsUser(any())).thenReturn(true);
-        when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(false);
+        String roomName = "testRoom";
+        String enterCode = "testCode";
+        String nickName = "testNickName";
+        Room room = roomRepository.save(new Room());
+        User user = userRepository.save(new User());
 
-        UserRoomVo userRoomVo = new UserRoomVo(userRoomId, userId, roomId, nickname);
-        when(userRoomService.createUserRoom(any(CreateUserRoomParam.class))).thenReturn(userRoomVo);
+        GroupRoomDetail groupRoomDetail = new GroupRoomDetail(room);
+        groupRoomDetail.setRoomOwnerId(1);
+        groupRoomDetail.setRoomName(roomName);
+        groupRoomDetail.setEnterCode(enterCode);
+        groupRoomDetailRepository.save(groupRoomDetail);
+
+        EnterGroupRoomRequest requestDto = new EnterGroupRoomRequest(
+                user.getId(),
+                room.getId(),
+                roomName,
+                enterCode,
+                nickName
+        );
 
         //when
-        EnterRoomResponse enterRoomResponse = groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+        EnterRoomResponse enterRoomResponse = groupRoomService.enterGroupRoom(requestDto);
 
         //then
-        Assertions.assertEquals(enterRoomResponse.getUserRoomId(), userRoomId);
+        assertEquals(enterRoomResponse.getNickname(), nickName);
     }
 
     @Test
     @DisplayName("그룹 채팅방 입장에 실패합니다. - 채팅방 존재하지 않음")
     void enter_group_room_채팅방_존재하지_않음() {
-
-        //given
-        when(roomService.isExistsRoom(any())).thenReturn(false);
-
-        //when & then
-        Assertions.assertThrows(RoomNotFoundException.class, () -> {
-            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
-        });
-    }
-
-    @Test
-    @DisplayName("그룹 채팅방 입장에 실패합니다. - 그룹 채팅방 아님")
-    void enter_group_room_그룹_채팅방_아님() {
-
-        //given
-        when(roomService.isExistsRoom(any())).thenReturn(true);
-        when(roomService.isGroupRoom(any())).thenReturn(false);
+        String roomName = "testRoom";
+        String enterCode = "testCode";
+        String nickName = "testNickName";
+        EnterGroupRoomRequest requestDto = new EnterGroupRoomRequest(
+                1,
+                1,
+                roomName,
+                enterCode,
+                nickName
+        );
 
         //when & then
         Assertions.assertThrows(RoomNotFoundException.class, () -> {
-            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+            groupRoomService.enterGroupRoom(requestDto);
         });
     }
 
     @Test
     @DisplayName("그룹 채팅방 입장에 실패합니다. - 입장 코드 틀림")
     void enter_group_room_입장_코드_틀림() {
-
         //given
-        when(roomService.isExistsRoom(any())).thenReturn(true);
-        when(roomService.isGroupRoom(any())).thenReturn(true);
-        when(groupRoomDetailService.isRightEnterCode(any(), any())).thenReturn(false);
+        String roomName = "testRoom";
+        String enterCode = "testCode";
+        String nickName = "testNickName";
+        Room room = roomRepository.save(new Room());
+        User user = userRepository.save(new User());
+
+        GroupRoomDetail groupRoomDetail = new GroupRoomDetail(room);
+        groupRoomDetail.setRoomOwnerId(1);
+        groupRoomDetail.setRoomName(roomName);
+        groupRoomDetail.setEnterCode(enterCode);
+        groupRoomDetailRepository.save(groupRoomDetail);
+
+        EnterGroupRoomRequest requestDto = new EnterGroupRoomRequest(
+                user.getId(),
+                room.getId(),
+                roomName,
+                "wrongCode",
+                nickName
+        );
 
         //when & then
         Assertions.assertThrows(CanNotEnterRoomException.class, () -> {
-            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+            groupRoomService.enterGroupRoom(requestDto);
         });
     }
 
     @Test
     @DisplayName("그룹 채팅방 입장에 실패합니다. - 사용자를 찾을 수 없음")
     void enter_group_room_사용자를_찾을_수_없음() {
-
         //given
-        when(roomService.isExistsRoom(any())).thenReturn(true);
-        when(roomService.isGroupRoom(any())).thenReturn(true);
-        when(groupRoomDetailService.isRightEnterCode(any(), any())).thenReturn(true);
-        when(userService.isExistsUser(any())).thenReturn(false);
+        String roomName = "testRoom";
+        String enterCode = "testCode";
+        String nickName = "testNickName";
+        Room room = roomRepository.save(new Room());
+
+        GroupRoomDetail groupRoomDetail = new GroupRoomDetail(room);
+        groupRoomDetail.setRoomOwnerId(1);
+        groupRoomDetail.setRoomName(roomName);
+        groupRoomDetail.setEnterCode(enterCode);
+        groupRoomDetailRepository.save(groupRoomDetail);
+
+        EnterGroupRoomRequest requestDto = new EnterGroupRoomRequest(
+                1,
+                room.getId(),
+                roomName,
+                enterCode,
+                nickName
+        );
 
         //when & then
         Assertions.assertThrows(UserNotFoundException.class, () -> {
-            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+            groupRoomService.enterGroupRoom(requestDto);
         });
     }
 
     @Test
     @DisplayName("그룹 채팅방 입장에 실패합니다. - 이미 입장한 사용자")
     void enter_group_room_이미_입장한_사용자() {
-
         //given
-        when(roomService.isExistsRoom(any())).thenReturn(true);
-        when(roomService.isGroupRoom(any())).thenReturn(true);
-        when(groupRoomDetailService.isRightEnterCode(any(), any())).thenReturn(true);
-        when(userService.isExistsUser(any())).thenReturn(true);
-        when(userRoomService.isExistsUserRoom(any(), any())).thenReturn(true);
+        String roomName = "testRoom";
+        String enterCode = "testCode";
+        String nickName = "testNickName";
+        Room room = roomRepository.save(new Room());
+        User user = userRepository.save(new User());
+
+        GroupRoomDetail groupRoomDetail = new GroupRoomDetail(room);
+        groupRoomDetail.setRoomOwnerId(1);
+        groupRoomDetail.setRoomName(roomName);
+        groupRoomDetail.setEnterCode(enterCode);
+        groupRoomDetailRepository.save(groupRoomDetail);
+
+        userRoomRepository.save(new UserRoom(user, room, nickName));
+
+        EnterGroupRoomRequest requestDto = new EnterGroupRoomRequest(
+                1,
+                room.getId(),
+                roomName,
+                enterCode,
+                nickName
+        );
 
         //when & then
         Assertions.assertThrows(DuplicatedUserRoomException.class, () -> {
-            groupRoomService.enterGroupRoom(enterGroupRoomRequest);
+            groupRoomService.enterGroupRoom(requestDto);
         });
     }
 
@@ -203,66 +231,93 @@ class GroupRoomServiceTest {
     void end_group_room() {
 
         //given
-        when(roomService.isExistsRoom(any())).thenReturn(true);
-        when(roomService.isGroupRoom(any())).thenReturn(true);
-        when(groupRoomDetailService.isRoomOwner(any(), any())).thenReturn(true);
-        when(manitoRoomDetailService.isExistsManitoRoomsInGroup(any())).thenReturn(false);
+        String roomName = "testRoom";
+        String enterCode = "testCode";
+        Room room = roomRepository.save(new Room());
+        User user = userRepository.save(new User());
+
+        GroupRoomDetail groupRoomDetail = new GroupRoomDetail(room);
+        groupRoomDetail.setRoomOwnerId(user.getId());
+        groupRoomDetail.setRoomName(roomName);
+        groupRoomDetail.setEnterCode(enterCode);
+        groupRoomDetailRepository.save(groupRoomDetail);
+
+        EndGroupRoomRequest requestDto = new EndGroupRoomRequest(room.getId(), user.getId());
 
         //when
-        EndRoomResponse endRoomResponse = groupRoomService.endGroupRoom(createEndGroupRoomRequest());
+        EndRoomResponse endRoomResponse = groupRoomService.endGroupRoom(requestDto);
 
         //then
-        Assertions.assertEquals(endRoomResponse.getRoomId(), roomId);
+        Assertions.assertAll(
+                () -> assertEquals(endRoomResponse.getRoomId(), room.getId()),
+                () -> assertTrue(roomRepository.findById(room.getId()).isEmpty()),
+                () -> assertTrue(groupRoomDetailRepository.findById(room.getId()).isEmpty()),
+                () -> assertTrue(userRoomRepository.findByRoomId(room.getId()).isEmpty())
+        );
     }
 
     @Test
-    @DisplayName("그룹 채팅을 종료에 실패합니다_채팅방이 존재하지 않음")
+    @DisplayName("그룹 채팅 종료에 실패합니다_채팅방이 존재하지 않음")
     void end_group_room_채팅방이_존재하지_않음() {
 
         //given
-        when(roomService.isExistsRoom(any())).thenReturn(true);
+        EndGroupRoomRequest requestDto = new EndGroupRoomRequest(1, 1);
 
         //when & then
         Assertions.assertThrows(RoomNotFoundException.class, () -> {
-            groupRoomService.endGroupRoom(createEndGroupRoomRequest());
+            groupRoomService.endGroupRoom(requestDto);
         });
     }
 
     @Test
-    @DisplayName("그룹 채팅을 종료에 실패합니다_종료 권한이 없음")
+    @DisplayName("그룹 채팅 종료에 실패합니다_종료 권한이 없음")
     void end_group_room_종료_권한이_없음() {
 
         //given
-        when(roomService.isExistsRoom(any())).thenReturn(true);
-        when(roomService.isGroupRoom(any())).thenReturn(true);
-        when(groupRoomDetailService.isRoomOwner(any(), any())).thenReturn(false);
+        String roomName = "testRoom";
+        String enterCode = "testCode";
+        Room room = roomRepository.save(new Room());
+        User user = userRepository.save(new User());
+
+        GroupRoomDetail groupRoomDetail = new GroupRoomDetail(room);
+        groupRoomDetail.setRoomOwnerId(user.getId());
+        groupRoomDetail.setRoomName(roomName);
+        groupRoomDetail.setEnterCode(enterCode);
+        groupRoomDetailRepository.save(groupRoomDetail);
+
+        EndGroupRoomRequest requestDto = new EndGroupRoomRequest(room.getId(), 100);
 
         //when & then
         Assertions.assertThrows(CanNotDeleteRoomException.class, () -> {
-            groupRoomService.endGroupRoom(createEndGroupRoomRequest());
+            groupRoomService.endGroupRoom(requestDto);
         });
     }
 
     @Test
-    @DisplayName("그룹 채팅을 종료에 실패합니다_마니또 채팅 진행중")
+    @DisplayName("그룹 채팅 종료에 실패합니다_마니또 채팅 진행중")
     void end_group_room_마니또_채팅_진행중() {
 
         //given
-        when(roomService.isExistsRoom(any())).thenReturn(true);
-        when(roomService.isGroupRoom(any())).thenReturn(true);
-        when(groupRoomDetailService.isRoomOwner(any(), any())).thenReturn(true);
-        when(manitoRoomDetailService.isExistsManitoRoomsInGroup(any())).thenReturn(true);
+        String roomName = "testRoom";
+        String enterCode = "testCode";
+        Room room = roomRepository.save(new Room());
+        User user = userRepository.save(new User());
+
+        GroupRoomDetail groupRoomDetail = new GroupRoomDetail(room);
+        groupRoomDetail.setRoomOwnerId(user.getId());
+        groupRoomDetail.setRoomName(roomName);
+        groupRoomDetail.setEnterCode(enterCode);
+        groupRoomDetail = groupRoomDetailRepository.save(groupRoomDetail);
+
+        Room manitoRoom = roomRepository.save(new Room(RoomType.M));
+        ManitoRoomDetail manitoRoomDetail = new ManitoRoomDetail(manitoRoom, groupRoomDetail, LocalDateTime.now().plusDays(1L));
+        manitoRoomDetailRepository.save(manitoRoomDetail);
+
+        EndGroupRoomRequest requestDto = new EndGroupRoomRequest(room.getId(), user.getId());
 
         //when & then
         Assertions.assertThrows(CanNotDeleteRoomException.class, () -> {
-            groupRoomService.endGroupRoom(createEndGroupRoomRequest());
+            groupRoomService.endGroupRoom(requestDto);
         });
-    }
-
-    private EndGroupRoomRequest createEndGroupRoomRequest() {
-        return new EndGroupRoomRequest(
-                roomId,
-                roomOwnerId
-        );
     }
 }

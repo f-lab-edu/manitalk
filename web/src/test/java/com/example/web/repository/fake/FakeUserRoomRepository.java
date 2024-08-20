@@ -3,6 +3,7 @@ package com.example.web.repository.fake;
 import com.example.web.domain.UserRoom;
 import com.example.web.repository.jpa.UserRoomRepository;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -31,6 +32,11 @@ public class FakeUserRoomRepository implements UserRoomRepository {
         Integer id = entity.getId();
         if (entity.getId() == null) {
             id = idGenerator.incrementAndGet();
+            try {
+                setId(entity, id);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         database.put(id, entity);
         return entity;
@@ -106,5 +112,11 @@ public class FakeUserRoomRepository implements UserRoomRepository {
         return database.values().stream()
                 .filter(ur -> !ur.isDeleted() && roomIds.contains(ur.getRoom().getId()))
                 .collect(Collectors.toList());
+    }
+
+    private void setId(UserRoom userRoom, Integer id) throws Exception {
+        Field idField = UserRoom.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(userRoom, id);
     }
 }

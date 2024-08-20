@@ -1,27 +1,27 @@
 package com.example.web.repository.fake;
 
-import com.example.web.domain.UserRoomMission;
-import com.example.web.repository.jpa.UserRoomMissionRepository;
+import com.example.web.domain.Mission;
+import com.example.web.repository.jpa.MissionRepository;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class FakeUserRoomMissionRepository implements UserRoomMissionRepository {
+public class FakeMissionRepository implements MissionRepository {
 
-    private final Map<Integer, UserRoomMission> database = new HashMap<>();
+    private final Map<Integer, Mission> database = new HashMap<>();
     private final AtomicInteger idGenerator = new AtomicInteger();
 
     @Override
-    public Optional<UserRoomMission> findById(Integer id) {
+    public Optional<Mission> findById(Integer id) {
         return Optional.ofNullable(database.get(id));
     }
 
     @Override
-    public <S extends UserRoomMission> S save(S entity) {
+    public <S extends Mission> S save(S entity) {
         Integer id = entity.getId();
         if (entity.getId() == null) {
-            id = entity.getUserRoom() != null ? entity.getUserRoom().getId() : idGenerator.incrementAndGet();
+            id = idGenerator.incrementAndGet();
             try {
                 setId(entity, id);
             } catch (Exception e) {
@@ -33,7 +33,7 @@ public class FakeUserRoomMissionRepository implements UserRoomMissionRepository 
     }
 
     @Override
-    public <S extends UserRoomMission> List<S> saveAll(Iterable<S> entities) {
+    public <S extends Mission> List<S> saveAll(Iterable<S> entities) {
         List<S> result = new ArrayList<>();
         for (S entity : entities) {
             save(entity);
@@ -48,19 +48,19 @@ public class FakeUserRoomMissionRepository implements UserRoomMissionRepository 
     }
 
     @Override
-    public void delete(UserRoomMission entity) {
+    public void delete(Mission entity) {
         database.remove(entity.getId());
     }
 
     @Override
-    public void deleteAll(Iterable<? extends UserRoomMission> entities) {
-        for (UserRoomMission entity : entities) {
+    public void deleteAll(Iterable<? extends Mission> entities) {
+        for (Mission entity : entities) {
             delete(entity);
         }
     }
 
     @Override
-    public UserRoomMission getReferenceById(Integer id) {
+    public Mission getReferenceById(Integer id) {
         return database.get(id);
     }
 
@@ -70,9 +70,19 @@ public class FakeUserRoomMissionRepository implements UserRoomMissionRepository 
                 .anyMatch(ur -> ur.getId().equals(id));
     }
 
-    private void setId(UserRoomMission userRoomMission, Integer id) throws Exception {
-        Field idField = UserRoomMission.class.getDeclaredField("id");
+    private void setId(Mission user, Integer id) throws Exception {
+        Field idField = Mission.class.getDeclaredField("id");
         idField.setAccessible(true);
-        idField.set(userRoomMission, id);
+        idField.set(user, id);
+    }
+
+    @Override
+    public Integer count() {
+        return database.size();
+    }
+
+    @Override
+    public Mission getRandomMission(int range) {
+        return database.get(1);
     }
 }

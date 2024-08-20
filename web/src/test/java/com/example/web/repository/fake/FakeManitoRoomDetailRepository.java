@@ -4,6 +4,7 @@ import com.example.web.domain.ManitoRoomDetail;
 import com.example.web.repository.jpa.ManitoRoomDetailRepository;
 import com.example.web.vo.ManitoRoomDetailVo;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,7 +24,12 @@ public class FakeManitoRoomDetailRepository implements ManitoRoomDetailRepositor
     public <S extends ManitoRoomDetail> S save(S entity) {
         Integer id = entity.getId();
         if (entity.getId() == null) {
-            id = idGenerator.incrementAndGet();
+            id = entity.getRoom() != null ? entity.getRoom().getId() : idGenerator.incrementAndGet();
+            try {
+                setId(entity, id);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         database.put(id, entity);
         return entity;
@@ -87,5 +93,11 @@ public class FakeManitoRoomDetailRepository implements ManitoRoomDetailRepositor
                 .map(database::get)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    private void setId(ManitoRoomDetail manitoRoomDetail, Integer id) throws Exception {
+        Field idField = ManitoRoomDetail.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(manitoRoomDetail, id);
     }
 }

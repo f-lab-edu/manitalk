@@ -4,6 +4,7 @@ import com.example.web.domain.Room;
 import com.example.web.enums.RoomType;
 import com.example.web.repository.jpa.RoomRepository;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -24,6 +25,11 @@ public class FakeRoomRepository implements RoomRepository {
         Integer id = entity.getId();
         if (entity.getId() == null) {
             id = idGenerator.incrementAndGet();
+            try {
+                setId(entity, id);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         database.put(id, entity);
         return entity;
@@ -86,5 +92,11 @@ public class FakeRoomRepository implements RoomRepository {
                 .map(database::get)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    private void setId(Room room, Integer id) throws Exception {
+        Field idField = Room.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(room, id);
     }
 }

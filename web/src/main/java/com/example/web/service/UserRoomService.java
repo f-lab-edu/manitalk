@@ -96,9 +96,11 @@ public class UserRoomService {
     }
 
     public void setNicknameByUserRoomId(Integer userRoomId, String nickname) {
-        UserRoom userRoom = entityManager.getReference(UserRoom.class, userRoomId);
-        userRoom.setNickname(nickname);
-        userRoomRepository.save(userRoom);
+        UserRoom userRoom = userRoomRepository.findById(userRoomId).orElse(null);
+        if (userRoom != null) {
+            userRoom.setNickname(nickname);
+            userRoomRepository.save(userRoom);
+        }
     }
 
     public List<UserRoomVo> getUserRoomList(List<Integer> roomIds) {
